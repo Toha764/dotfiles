@@ -32,15 +32,29 @@ return {
 				update_in_insert = false,
 				float = { border = "rounded" },
 			})
-			vim.lsp.config("lua_ls", { capabilities = capabilities })
+			vim.lsp.config("lua_ls", {
+				capabilities = capabilities,
+				settings = {
+					Lua = {
+						diagnostics = {
+							globals = { "vim" },
+						},
+						workspace = {
+							checkThirdParty = false,
+							library = {
+								vim.env.VIMRUNTIME,
+							},
+						},
+					},
+				},
+			})
 			vim.lsp.config("ts_ls", { capabilities = capabilities })
 			vim.lsp.config("pyright", { capabilities = capabilities })
 			vim.lsp.config("gopls", { capabilities = capabilities })
 			vim.lsp.config("clangd", { capabilities = capabilities })
 			vim.lsp.config("html", { capabilities = capabilities })
 			vim.lsp.config("css", { capabilities = capabilities })
-			vim.lsp.config("intelephense", {capabilities = capabilities })
-				
+			vim.lsp.config("intelephense", { capabilities = capabilities })
 
 			vim.lsp.enable("lua_ls")
 			vim.lsp.enable("ts_ls")

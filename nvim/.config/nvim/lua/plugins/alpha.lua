@@ -30,7 +30,7 @@ return {
 				"n",
 				"📝 Browse Notes",
 				":cd /Users/toha/300\\ Resources/00\\ Books/000\\ Markdown_Notes | Yazi<CR>"
-        ),
+			),
 			dashboard.button("l", "< >Leet code", ":Leet<CR>"),
 			dashboard.button("r", "⏱  Recent", ":Telescope oldfiles<CR>"),
 			dashboard.button("q", "⏻ Quit", ":qa<CR>"),

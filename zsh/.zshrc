@@ -46,7 +46,8 @@ alias lo='source ~/scripts/fzf-oldfiles.sh'
 
 # git 
 alias gadd="git add ."
-alias gstatus="git status -s"
+alias gs="git status -s"
 alias gcommit='git commit -m'
+alias gp='git push origin main'
 alias glog='git log --oneline --graph --all'
 alias gcreate='gh repo create --private --source=. --remote=origin'

@@ -3,7 +3,7 @@ return {
 	priority = 1000, -- load before other UI plugins
 	config = function()
 		require("gruvbox").setup({
-			contrast = "soft", -- "hard", "soft", or ""
+			contrast = "hard", -- "hard", "soft", or ""
 			transparent_mode = false,
 		})
 

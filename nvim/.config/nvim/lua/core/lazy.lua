@@ -1,28 +1,49 @@
 --------------------------------------------------
--- Bootstrap lazy.nvim Package Manager
+-- Bootstrap lazy.nvim
 --------------------------------------------------
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
-if not vim.loop.fs_stat(lazypath) then
-	vim.fn.system({
+-- prefer vim.uv (new API), fallback to vim.loop
+local uv = vim.uv or vim.loop
+
+if not uv.fs_stat(lazypath) then
+	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+
+	local out = vim.fn.system({
 		"git",
 		"clone",
 		"--filter=blob:none",
-		"https://github.com/folke/lazy.nvim.git",
 		"--branch=stable",
+		lazyrepo,
 		lazypath,
 	})
+
+	if vim.v.shell_error ~= 0 then
+		vim.api.nvim_err_writeln("Failed to clone lazy.nvim:\n" .. out)
+		return
+	end
 end
 
 vim.opt.rtp:prepend(lazypath)
 
 --------------------------------------------------
--- Load All Plugins
+-- Plugins
 --------------------------------------------------
+
 require("lazy").setup({
-	{ import = "plugins" },
-	require("themes"), -- ← single active theme only
-}, {
-	change_detection = { notify = false },
+	spec = {
+		{ import = "plugins" },
+
+		-- treat themes as a proper spec, not a raw require
+		{ import = "themes" },
+	},
+
+	change_detection = {
+		notify = false,
+	},
+
+	install = {
+		colorscheme = { "gruvbox, " }, -- fallback if nothing else loads
+	},
 })

@@ -1,0 +1,65 @@
+# THEME 
+# -----------------
+theme = Black Metal (Nile)
+#theme = TokyoNight Storm
+
+cursor-color = #e0def4
+
+# Colors 
+# -----------------
+background = #000000
+foreground = #cfcfcf
+selection-background = #222222
+
+#custom-shader = ~/.config/ghostty/shaders/retro-term.glsl
+#custom-shader-animation = true
+
+# FONT
+# -----------------
+font-family = "JetBrainsMono Nerd Font"
+font-size = 18
+font-feature = -liga,-calt,-dlig
+
+# CURSOR
+# -----------------
+cursor-style = block
+
+# WINDOW / LAYOUT
+# -----------------
+#fullscreen = true #switch these when turned fullscreen
+window-decoration = none
+
+macos-titlebar-style = transparent
+
+window-padding-x = 8
+window-padding-y = 4
+window-padding-balance = true
+
+# subtle depth
+# -----------------
+background-opacity = 0.75
+background-blur-radius = 10
+
+# split aesthetics
+# -----------------
+unfocused-split-opacity = 0.65
+split-divider-color = #44415a
+
+# BEHAVIOR
+# -----------------
+confirm-close-surface = false
+mouse-hide-while-typing = true
+scrollback-limit = 100000
+
+# SHELL
+# -----------------
+shell-integration = zsh
+
+# QUALITY OF LIFE
+# -----------------
+resize-overlay = never
+keybind = cmd+t=ignore
+
+# OPTIONAL 
+# -----------------
+copy-on-select = clipboard

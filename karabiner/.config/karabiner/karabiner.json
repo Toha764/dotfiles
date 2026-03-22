@@ -25,7 +25,7 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "spacebar",
+                  "key_code": "a",
                   "modifiers": {
                     "mandatory": [
                       "left_control",

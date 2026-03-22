@@ -6,6 +6,7 @@ return {
 	-- LSPConfig: Configure LSP servers
 	{
 		"neovim/nvim-lspconfig",
+		event = { "BufReadPre" },
 		dependencies = {
 			"williamboman/mason-lspconfig.nvim",
 			"hrsh7th/cmp-nvim-lsp",

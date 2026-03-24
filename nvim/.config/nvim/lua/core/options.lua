@@ -117,3 +117,31 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 		vim.highlight.on_yank()
 	end,
 })
+
+-- makes the theme transparent
+vim.api.nvim_create_autocmd("ColorScheme", {
+	nested = true,
+	callback = function()
+		local groups = {
+			"Normal",
+			"NormalNC",
+			"NormalFloat",
+			"FloatBorder",
+			"SignColumn",
+			"EndOfBuffer",
+			"FoldColumn",
+			"LineNr",
+			"CursorLineNr",
+			"StatusLine",
+			"StatusLineNC",
+			"TabLine",
+			"TabLineFill",
+			"TabLineSel",
+			"Pmenu",
+			"PmenuSbar",
+		}
+		for _, g in ipairs(groups) do
+			vim.api.nvim_set_hl(0, g, { bg = "none", ctermbg = "none" })
+		end
+	end,
+})

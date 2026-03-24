@@ -1,11 +1,7 @@
---------------------------------------------------
--- Telescope Configuration
---------------------------------------------------
-
 return {
-
 	"nvim-telescope/telescope.nvim",
-	cmd = { "Telescope" },
+	cmd = "Telescope",
+
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		{
@@ -15,25 +11,29 @@ return {
 		"nvim-telescope/telescope-ui-select.nvim",
 	},
 
-	config = function()
-		local telescope = require("telescope")
-		local builtin = require("telescope.builtin")
+	keys = {
+		{ "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Files" },
+		{ "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Grep" },
+		{ "<leader>fr", "<cmd>Telescope oldfiles<cr>", desc = "Recent" },
 
-		telescope.setup({
+		-- Theme picker
+		{ "<leader>ft", "<cmd>Telescope colorscheme<cr>", desc = "Themes" },
+	},
+
+	opts = function()
+		return {
 			defaults = {
 				sorting_strategy = "ascending",
+				layout_strategy = "horizontal",
 				layout_config = {
 					prompt_position = "top",
 				},
 
-				-- Ignore heavy folders globally
 				file_ignore_patterns = {
 					"node_modules",
 					".git/",
 					"dist",
 					"build",
-					"%.jpg",
-					"%.png",
 				},
 
 				vimgrep_arguments = {
@@ -44,28 +44,20 @@ return {
 					"--line-number",
 					"--column",
 					"--smart-case",
+					"--hidden",
+					"--glob",
+					"!**/.git/*",
 				},
 			},
 
 			pickers = {
 				find_files = {
-					search_dirs = {
-						"~/300 Resources/Markdown_Notes/",
-						"~/100 Projects/",
-					},
-					hidden = false, -- keep fast by default
+					hidden = true,
 					find_command = {
 						"fd",
 						"--type",
 						"f",
-						"--exclude",
-						".git",
-						"--exclude",
-						"node_modules",
-						"--exclude",
-						"dist",
-						"--exclude",
-						"build",
+						"--strip-cwd-prefix",
 					},
 				},
 				colorscheme = {
@@ -74,9 +66,7 @@ return {
 			},
 
 			extensions = {
-				["ui-select"] = {
-					require("telescope.themes").get_dropdown({}),
-				},
+				["ui-select"] = require("telescope.themes").get_dropdown({}),
 				fzf = {
 					fuzzy = true,
 					override_generic_sorter = true,
@@ -84,18 +74,14 @@ return {
 					case_mode = "smart_case",
 				},
 			},
-		})
+		}
+	end,
+
+	config = function(_, opts)
+		local telescope = require("telescope")
+		telescope.setup(opts)
 
 		telescope.load_extension("fzf")
 		telescope.load_extension("ui-select")
-
-		vim.keymap.set("n", "<leader>ff", function()
-			builtin.find_files()
-		end, { desc = "Find Files" })
-
-		vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Live Grep" })
-		-- vim.keymap.set("n", "<leader>cd", builtin.diagnostics, { desc = "Diagnostics" })
-		vim.keymap.set("n", "<leader>fr", builtin.oldfiles, { desc = "Recent Files" })
-		vim.keymap.set("n", "<leader>ch", builtin.help_tags, { desc = "Help Tags" })
 	end,
 }

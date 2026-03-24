@@ -1,43 +1,18 @@
--- default
-vim.cmd("colorscheme zenbones")
+local theme = "zenbones"
 
--- makes bg transparent
-vim.api.nvim_create_autocmd("ColorScheme", {
-	pattern = "*",
-	callback = function()
-		local groups = {
-			"Normal",
-			"NormalNC",
-			"NormalFloat",
-			"FloatBorder",
-			"SignColumn",
-			"EndOfBuffer",
-			"FoldColumn",
-			"LineNr",
-			"CursorLineNr",
-			"StatusLine",
-			"StatusLineNC",
-			"TabLine",
-			"TabLineFill",
-			"TabLineSel",
-			"Pmenu",
-			"PmenuSbar",
-		}
-		for _, g in ipairs(groups) do
-			vim.api.nvim_set_hl(0, g, { bg = "none", ctermbg = "none" })
-		end
-	end,
-})
-
-vim.cmd("doautocmd ColorScheme")
--- theme lists
 return {
-	require("themes.gruvbox"),
-	require("themes.zenbones"),
-
-	{ "folke/tokyonight.nvim", lazy = true },
-	{ "catppuccin/nvim", name = "catppuccin", lazy = true },
-	{ "rebelot/kanagawa.nvim", lazy = true },
-	{ "EdenEast/nightfox.nvim", lazy = true },
-	{ "rose-pine/neovim", name = "rose-pine", lazy = true },
+	{
+		"zenbones-theme/zenbones.nvim",
+		dependencies = "rktjmp/lush.nvim",
+		lazy = false,
+		priority = 1000,
+		config = function()
+			vim.cmd.colorscheme(theme)
+		end,
+	},
+	{ "folke/tokyonight.nvim", lazy = false },
+	{ "catppuccin/nvim", name = "catppuccin", lazy = false },
+	{ "rebelot/kanagawa.nvim", lazy = false },
+	{ "EdenEast/nightfox.nvim", lazy = false },
+	{ "rose-pine/neovim", name = "rose-pine", lazy = false },
 }

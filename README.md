@@ -51,6 +51,7 @@ Feel free to contribute here. Main goal:
 
 ### Courses & Languages
 
+- [Javascript 33 Must Concepts](https://github.com/leonardomso/33-js-concepts)
 - [Cisco Networking Academy](https://www.netacad.com/launch?id=da0847b7-e6fc-4597-bc31-38ddd6b07a2e&tab=curriculum&view=bf816861-ac2c-5ec6-81ac-f360e14b2cf0)
 - [Learn By Example](https://www.learnbyexample.org/)
   Learn Python, Sql, R by examples.
@@ -155,16 +156,16 @@ Feel free to contribute here. Main goal:
 [Papers We Love](https://github.com/papers-we-love/papers-we-love)  
  Important CS papers and reading guides.
 
-** Research Paper Indices **
+**Research Paper Indices**
 
-- **[Google Scholar](https://scholar.google.com/)** The "Google" of academic papers. Good for starting wide.
+- **[Google Scholar](https://scholar.google.com/)** The "Google" of academic papers.
 - **[Microsoft Academic](https://www.microsoft.com/en-us/research/project/microsoft-academic-graph/)**
   - _Alternative:_ **[OpenAlex](https://openalex.org/)**
-- **[DOAJ (Directory of Open Access Journals)](https://doaj.org/)** "Gold Standard" for verifying if a journal
+- **[DOAJ (Directory of Open Access Journals)](https://doaj.org/)**
 - **[PubMed](https://pubmed.ncbi.nlm.nih.gov/)** central hub for life sciences and biomedical topics.
 - **[arXiv](https://arxiv.org/)** papers released before peer review, mainly in Math, CS, and Physics
 
-** Blogs **
+**Blogs**
 
 - [Engineering Blogs](https://github.com/kilimchoi/engineering-blogs)
 
@@ -177,3 +178,4 @@ Feel free to contribute here. Main goal:
 - [Devpost Hackathons](https://devpost.com/hackathons?page=2)
   Some Hackathons
 - [Robotics in Python](https://github.com/AtsushiSakai/PythonRobotics?tab=readme-ov-file#what-is-this)
+- [Learn Git Visually](https://learngitbranching.js.org/)

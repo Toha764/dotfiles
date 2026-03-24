@@ -19,5 +19,3 @@ require("core.options")
 -- UI modules
 require("ui.tabline").setup()
 require("ui.terminal").setup()
-
-

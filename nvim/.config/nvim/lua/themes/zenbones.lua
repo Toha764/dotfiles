@@ -9,8 +9,7 @@ return {
 	priority = 1000,
 	config = function()
 		vim.o.background = "dark"
-		vim.cmd("colorscheme zenbones")
-
+		vim.cmd.colorscheme("zenbones")
 		-- Default (Pure Black background)
 		-- vim.api.nvim_set_hl(0, "NormalNC", { bg = "#0e0e0e" })
 		-- vim.api.nvim_set_hl(0, "SignColumn", { bg = "#000000" })

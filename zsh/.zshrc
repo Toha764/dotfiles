@@ -1,5 +1,4 @@
 ### Oh My Zsh & Plugins 
-
 ZSH_THEME="robbyrussell"
 
 plugins=(
@@ -12,7 +11,6 @@ source $HOME/.oh-my-zsh/oh-my-zsh.sh
 source <(fzf --zsh)
 eval "$(zoxide init zsh)"
 export FZF_DEFAULT_OPTS='--height 40% --tmux bottom,40% --layout reverse --border top'
-
 
 # vim-mode & editor settings
 set -o vi
@@ -41,7 +39,7 @@ alias c="clear"
 alias cat="bat"
 alias nv="nvim"
 alias yz="yazi"
-alias attach="tmux attach 2>/dev/null || tmux new-session -s main"
+alias tx="tmux attach 2>/dev/null || tmux new-session -s main"
 
 # fuzzy-everything
 alias lo='source ~/scripts/fzf-oldfiles.sh'                                    # fuzzy last opened

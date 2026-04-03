@@ -1,7 +1,6 @@
 --------------------------------------------------
 -- Treesitter Configuration ***
 --------------------------------------------------
-
 return {
 	"nvim-treesitter/nvim-treesitter",
 	event = "BufReadPost",
@@ -14,6 +13,7 @@ return {
 
 		configs.setup({
 			ensure_installed = {
+				"c",
 				"lua",
 				"vim",
 				"vimdoc",

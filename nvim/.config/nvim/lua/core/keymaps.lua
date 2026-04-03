@@ -1,9 +1,9 @@
 -----------------------------------------------------
 -- Global Keymaps
 --------------------------------------------------
-
-vim.keymap.set("n", "q:", "<nop>", { desc = "Disable command history" })
-
+--- quick jj to esc
+vim.keymap.set("i", "jj", "<Esc>", { noremap = true, silent = true })
+vim.o.timeoutlen = 300
 --------------------------------------------------
 -- LSP Keymaps ***
 --------------------------------------------------

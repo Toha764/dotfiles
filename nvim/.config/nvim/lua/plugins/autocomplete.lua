@@ -18,12 +18,27 @@ return {
 		-- Insert mode completion
 		cmp.setup({
 			mapping = cmp.mapping.preset.insert({
+				["<Tab>"] = cmp.mapping(function(fallback)
+					if cmp.visible() then
+						cmp.select_next_item()
+					else
+						fallback() -- lets tabout handle it
+					end
+				end, { "i", "s" }),
+
+				["<S-Tab>"] = cmp.mapping(function(fallback)
+					if cmp.visible() then
+						cmp.select_prev_item()
+					else
+						fallback()
+					end
+				end, { "i", "s" }),
+
 				["<CR>"] = cmp.mapping.confirm({ select = true }),
 				["<C-e>"] = cmp.mapping.abort(),
 				["<C-d>"] = cmp.mapping.scroll_docs(4),
 				["<C-u>"] = cmp.mapping.scroll_docs(-4),
 			}),
-
 			window = {
 				completion = cmp.config.window.bordered({
 					winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual",

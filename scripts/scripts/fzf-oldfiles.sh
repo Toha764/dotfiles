@@ -14,12 +14,26 @@ list_oldfiles() {
         fi
     done
     # Use fzf to select from valid files
-    local files=($(printf "%s\n" "${valid_files[@]}" | \
-        grep -v '\[.*' | \
-        fzf --multi \
-        --preview 'bat -n --color=always --line-range=:500 {} 2>/dev/null || echo "Error previewing file"' \
-        --height=70% \
-        --layout=default))
+local files=$(
+  printf "%s\n" "${valid_files[@]}" |
+  grep -v '\[.*' |
+  fzf --multi \
+      --height=80% \
+      --layout=reverse \
+      --border \
+      --padding=1 \
+      --margin=1 \
+      --prompt=" Select files ❯ " \
+      --pointer="▶" \
+      --marker="✓" \
+      --separator="─" \
+      --color=bg+:#1e1e2e,bg:#181825,spinner:#f5e0dc,hl:#f38ba8 \
+      --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc \
+      --color=marker:#a6e3a1,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8 \
+      --preview 'bat --style=numbers --color=always --line-range=:300 {} 2>/dev/null || echo "No preview available"' \
+      --preview-window=right:60%:wrap \
+      --bind 'ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down'
+)
 
     # Open selected files in Neovim
     if [[ ${#files[@]} -gt 0 ]]; then

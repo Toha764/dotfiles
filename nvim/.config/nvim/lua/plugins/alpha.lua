@@ -33,7 +33,7 @@ return {
 			),
 			dashboard.button("l", "< >Leet code", ":Leet<CR>"),
 			dashboard.button("r", "⏱  Recent", ":Telescope oldfiles<CR>"),
-			dashboard.button("q", "⏻ Quit", ":qa<CR>"),
+			dashboard.button("qa", "⏻ Quit", ":qa<CR>"),
 		}
 
 		alpha.setup(dashboard.opts)

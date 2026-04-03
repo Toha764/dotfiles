@@ -2,7 +2,33 @@
 -- Editor Settings & Options
 --------------------------------------------------
 
-local augroup = vim.api.nvim_create_augroup("UserOptions", { clear = true })
+-- makes the theme transparent
+-- vim.api.nvim_create_autocmd("ColorScheme", {
+-- 	nested = true,
+-- 	callback = function()
+-- 		local groups = {
+-- 			"Normal",
+-- 			"NormalNC",
+-- 			"NormalFloat",
+-- 			"FloatBorder",
+-- 			"SignColumn",
+-- 			"EndOfBuffer",
+-- 			"FoldColumn",
+-- 			"LineNr",
+-- 			"CursorLineNr",
+-- 			"StatusLine",
+-- 			"StatusLineNC",
+-- 			"TabLine",
+-- 			"TabLineFill",
+-- 			"TabLineSel",
+-- 			"Pmenu",
+-- 			"PmenuSbar",
+-- 		}
+-- 		for _, g in ipairs(groups) do
+-- 			vim.api.nvim_set_hl(0, g, { bg = "none", ctermbg = "none" })
+-- 		end
+-- 	end,
+-- })
 
 -- Behavior
 vim.opt.clipboard = "unnamedplus"
@@ -65,9 +91,18 @@ vim.fn.mkdir(state .. "/backup", "p")
 -- Text: Select / Move / Copy / Paste
 -- ============================================================================
 
-vim.keymap.set({ "n", "v" }, "<leader>d", '"_d', { desc = "Delete without yanking" })
+-- overwriting vim's stupid philosophy
+vim.keymap.set({ "n", "v" }, "d", '"_d')
+vim.keymap.set({ "n", "v" }, "D", '"_D')
+vim.keymap.set({ "n", "v" }, "c", '"_c')
+vim.keymap.set({ "n", "v" }, "C", '"_C')
+vim.keymap.set("n", "x", '"_x')
+vim.keymap.set("n", "X", '"_X')
+vim.keymap.set({ "n", "v" }, "<leader>x", '"d', { desc = "Cut" })
+
 vim.keymap.set("n", "<C-a>", "ggVG", { desc = "Select all" })
 
+-- move code block + indent
 vim.keymap.set("n", "<A-j>", ":m .+1<CR>==", { silent = true })
 vim.keymap.set("n", "<A-k>", ":m .-2<CR>==", { silent = true })
 vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv", { silent = true })
@@ -98,6 +133,8 @@ vim.keymap.set("n", "<C-k>", "<C-w>k", { silent = true })
 -- Quality of Life Autocmds
 -- ============================================================================
 
+local augroup = vim.api.nvim_create_augroup("UserOptions", { clear = true })
+
 vim.api.nvim_create_autocmd({ "InsertLeave", "FocusLost", "BufLeave" }, {
 	group = augroup,
 	pattern = "*",
@@ -115,33 +152,5 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	group = augroup,
 	callback = function()
 		vim.highlight.on_yank()
-	end,
-})
-
--- makes the theme transparent
-vim.api.nvim_create_autocmd("ColorScheme", {
-	nested = true,
-	callback = function()
-		local groups = {
-			"Normal",
-			"NormalNC",
-			"NormalFloat",
-			"FloatBorder",
-			"SignColumn",
-			"EndOfBuffer",
-			"FoldColumn",
-			"LineNr",
-			"CursorLineNr",
-			"StatusLine",
-			"StatusLineNC",
-			"TabLine",
-			"TabLineFill",
-			"TabLineSel",
-			"Pmenu",
-			"PmenuSbar",
-		}
-		for _, g in ipairs(groups) do
-			vim.api.nvim_set_hl(0, g, { bg = "none", ctermbg = "none" })
-		end
 	end,
 })

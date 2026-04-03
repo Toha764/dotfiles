@@ -34,16 +34,12 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
 	spec = {
 		{ import = "plugins" },
-
-		-- treat themes as a proper spec, not a raw require
 		{ import = "themes" },
 	},
-
 	change_detection = {
 		notify = false,
 	},
-
 	install = {
-		colorscheme = { "gruvbox, " }, -- fallback if nothing else loads
+		colorscheme = { "gruvbox, " },
 	},
 })

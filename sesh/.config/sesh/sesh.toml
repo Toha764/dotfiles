@@ -1,8 +1,36 @@
 [[session]]
+name = "main"
+path = "~"
+
+[[session]]
 name = "dotfiles"
 path = "~/dotfiles"
+startup_command = "yazi"
 
 [[session]]
 name = "notes"
 path = "~/300 Resources/Markdown_Notes"
+startup_command = "notes"
 
+[[session]]
+name = "nvim"
+path = "~/"
+startup_command = "nvim"
+
+
+[[session]]
+name = "leet"
+startup_command = """
+# 1. Create the session in the background with a normal interactive shell
+tmux new-session -d -s leet
+
+# 2. Send the neovim command to the first window (1-indexed) and simulate hitting Enter
+tmux send-keys -t leet:1 "nvim +Leet" C-m
+
+# 3. Create your other windows
+tmux new-window -t leet -n test -c /tmp/ "nvim temp.js"
+tmux new-window -t leet -n notes -c ~/300\\ Resources/00\\ Books/000\\ Markdown_Notes/200\\ Problem\\ Solving/ "$HOME/.local/bin/notes"
+
+# 4. Focus back on the first window
+tmux select-window -t leet:1
+"""

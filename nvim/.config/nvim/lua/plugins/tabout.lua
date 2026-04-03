@@ -4,7 +4,7 @@
 
 return {
     "abecodes/tabout.nvim",
-    event = "InsertCharPre",
+    event = "InsertEnter",
     dependencies = {
         "nvim-treesitter/nvim-treesitter",
         "L3MON4D3/LuaSnip",

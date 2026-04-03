@@ -114,6 +114,8 @@ Feel free to contribute here. Main goal:
   Build large language models step by step.
 - [ML From Scratch](https://github.com/eriklindernoren/ML-From-Scratch)  
   Core machine learning algorithms implemented manually.
+- [ML Visualized](https://ml-visualized.com/index.html)
+  Machine Learning Course Visualization
 - [How to Learn ML Free - MLTut](https://www.mltut.com/how-to-learn-machine-learning-online-free/)
 - [Pytorch](https://www.learnpytorch.io/)
 - [Applied Data Science with Python - FreeCodeCamp](https://www.freecodecamp.org/news/applied-data-science-with-python-book/)

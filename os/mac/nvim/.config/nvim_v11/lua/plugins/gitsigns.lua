@@ -5,6 +5,6 @@
 return {
     "lewis6991/gitsigns.nvim",
     config = function()
-        require("gitsigns").setup()
+        require("os.mac.nvim.config.nvim.lua.config.gitsigns").setup()
     end,
 }

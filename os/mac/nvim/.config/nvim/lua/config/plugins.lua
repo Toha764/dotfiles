@@ -6,7 +6,8 @@ vim.pack.add({
 	"https://www.github.com/echasnovski/mini.nvim",
     "https://www.github.com/folke/which-key.nvim",
 	"https://www.github.com/ibhagwan/fzf-lua",
-	"https://www.github.com/nvim-tree/nvim-tree.lua",
+	-- "https://www.github.com/nvim-tree/nvim-tree.lua",
+    "https://github.com/mikavilpas/yazi.nvim",
 	{
 		src = "https://github.com/nvim-treesitter/nvim-treesitter",
 		branch = "main",
@@ -34,7 +35,8 @@ vim.pack.add({
 local function packadd(name)
 	vim.cmd("packadd " .. name)
 end
-packadd("nvim-treesitter")
+-- packadd("nvim-treesitter")
+packadd("yazi.nvim")
 packadd("gitsigns.nvim")
 packadd("mini.nvim")
 packadd("which-key.nvim")

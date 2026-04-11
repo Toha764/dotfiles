@@ -91,16 +91,12 @@ vim.fn.mkdir(state .. "/backup", "p")
 -- Text: Select / Move / Copy / Paste
 -- ============================================================================
 
--- overwriting vim's stupid philosophy
-vim.keymap.set({ "n", "v" }, "d", '"_d')
-vim.keymap.set({ "n", "v" }, "D", '"_D')
+-- overwriting sussy Behavior
 vim.keymap.set({ "n", "v" }, "c", '"_c')
 vim.keymap.set({ "n", "v" }, "C", '"_C')
-vim.keymap.set("n", "x", '"_x')
-vim.keymap.set("n", "X", '"_X')
-vim.keymap.set({ "n", "v" }, "<leader>x", '"d', { desc = "Cut" })
-
-vim.keymap.set("n", "<C-a>", "ggVG", { desc = "Select all" })
+vim.keymap.set({ "n", "v" }, "<leader>d", '_d', { desc = "Delete without yanking" })
+vim.keymap.set("x", "<leader>p", '"_dP', { desc = "Paste without yanking" })
+vim.keymap.set("n", "<C-a>", "ggVG\"+y", { desc = "Select all + copy" })
 
 -- move code block + indent
 vim.keymap.set("n", "<A-j>", ":m .+1<CR>==", { silent = true })

@@ -8,7 +8,12 @@ vim.keymap.set("i", "jj", "<Esc>", { noremap = true, silent = true })
 -- copy/paste
 vim.keymap.set("n", "<C-a>", "ggVG\"+y", { desc = "Select all + copy" })
 vim.keymap.set("x", "<leader>p", '"_dP', { desc = "Paste without yanking" })
-vim.keymap.set({ "n", "v" }, "<leader>x", '"_d', { desc = "Delete without yanking" })
+vim.keymap.set({ "n", "v" }, "<leader>d", '"_d', { desc = "Delete without yanking" })
+
+-- yazi opener 
+vim.keymap.set("n", "<leader>e", function()
+  require("yazi").yazi()
+end, { desc = "Open Yazi" })
 
 -- better movement in wrapped text
 vim.keymap.set("n", "j", function()

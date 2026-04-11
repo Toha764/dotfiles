@@ -72,17 +72,19 @@ export VISUAL="nvim"
 alias src='source ~/.zshrc'      # reload config
 alias rc='nvim $HOME/.zshrc'    # edit config
 alias ip='curl -s ipinfo.io'    # quick public IP info
-
-alias ls="eza --no-filesize --long --color=always --icons=always --no-user"
-alias cat="bat"
+alias lip="ifconfig | awk '/inet /{print $2}'"
 
 # --- quick commands ---
 alias c="clear"
 alias nv="nvim"
 alias yz="yazi"
-alias tk="task"
-# --- tmux auto attach ---
+
+# --- SUPER CUSTOM COMMANDS ---
+alias cat="bat"
+alias ls="eza --no-filesize --long --color=always --icons=always --no-user"
+alias tk="taskwarrior-tui"
 alias tx="tmux attach 2>/dev/null || tmux new-session -s main"
+alias ask="~/.scripts/llm-agent-mac.sh"
 
 ### Fuzzy Obessesion ###
 alias lo='source ~/.scripts/fzf-oldfiles.sh'                  # fuzzy recent files (script based)

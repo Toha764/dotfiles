@@ -9,6 +9,6 @@ return {
         { "<leader>e", "<cmd>Yazi<cr>", desc = "Open Yazi" },
     },
     config = function()
-        require("yazi").setup()
+        require("os.mac.nvim.config.nvim.lua.config.yazi").setup()
     end,
 }

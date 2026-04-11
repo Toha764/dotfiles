@@ -1,7 +1,7 @@
 -- ============================================================================
 -- LSP, Linting, Formatting & Completion
 -- ============================================================================
-local augroup = require("config.autocmds")
+local augroup = require("os.mac.nvim.config.nvim.lua.config.autocmds")
 
 local diagnostic_signs = {
 	Error = " ",

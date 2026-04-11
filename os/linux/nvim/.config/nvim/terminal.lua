@@ -1,7 +1,7 @@
 -- ============================================================================
 -- FLOATING TERMINAL
 -- ============================================================================
-local augroup = require("config.autocmds")
+local augroup = require("os.mac.nvim.config.nvim.lua.config.autocmds")
 
 vim.api.nvim_create_autocmd("TermClose", {
 	group = augroup,

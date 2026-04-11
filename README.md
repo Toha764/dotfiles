@@ -108,7 +108,7 @@ Feel free to contribute here. Main goal:
 
 ---
 
-### ML, AI, DS
+### ML, AI, Deep Learning
 
 - [LLMs From Scratch](https://github.com/rasbt/LLMs-from-scratch)  
   Build large language models step by step.
@@ -121,8 +121,8 @@ Feel free to contribute here. Main goal:
 - [Applied Data Science with Python - FreeCodeCamp](https://www.freecodecamp.org/news/applied-data-science-with-python-book/)
 - [Deep Learning by UvA](https://uvadlc-notebooks.readthedocs.io/en/latest/index.html)
 - [Made With ML](https://github.com/GokuMohandas/Made-With-ML)  
-  Practical guide to production rady ML systems.
-
+  Practical guide to production ready ML systems.
+- [DL Project & Theory w/ Mahdid](https://www.youtube.com/@deeplearningexplained)
 ---
 
 ### Must "Chekout" Repos
@@ -144,14 +144,15 @@ Feel free to contribute here. Main goal:
 
 ---
 
-### Great Math Teachers
+### Mathematics Resources
 
 - [ProfRobBob](https://www.youtube.com/@profrobbob)
 - [Professor Leonard](https://www.youtube.com/@ProfessorLeonard)
 - [Dr Trefor](https://www.youtube.com/@DrTrefor)
 - [3b1b](https://www.youtube.com/@3blue1brown)
 
----
+- [Algebrica](https://algebrica.org/)
+  An ontological graph based minimal math archive
 
 ### **Papers, Blogs, Articles & Latest Tech Stuff**
 

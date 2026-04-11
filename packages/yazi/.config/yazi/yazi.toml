@@ -1,18 +1,17 @@
 [manager]
-
 # Path
 cwd = { fg = "#d79921", bold = true }
 
 # Regular files
 file = { fg = "#ebdbb2" }
 
-# Directories (warm brown)
+# Directories
 dir = { fg = "#b57614", bold = true }
 
 # Executables
 exec = { fg = "#d65d0e", bold = true }
 
-# Selected item (soft brown highlight)
+# Selected item
 hovered = { fg = "#1d2021", bg = "#b57614" }
 
 # Preview
@@ -20,3 +19,41 @@ preview = { fg = "#ebdbb2" }
 
 # Status line
 status = { fg = "#ebdbb2", bg = "#282828" }
+
+show_symlink = false
+linemode = "size"
+
+# Permissions
+perm_type  = { fg = "lightgreen" }
+perm_read  = { fg = "lightyellow" }
+perm_write = { fg = "lightred" }
+perm_exec  = { fg = "lightcyan" }
+
+
+[filetype]
+rules = [
+  # Images
+  { mime = "image/*", fg = "yellow" },
+
+  # Documents / media-ish
+  { mime = "application/{epub*,pdf,doc,rtf,vnd.*}", fg = "yellow" },
+  { mime = "{audio,video}/*", fg = "magenta" },
+
+  # Links
+  { name = "*", is = "link", fg = "cyan" },
+  { name = "*/", is = "link", fg = "cyan", bold = true },
+
+  # Archives
+  { mime = "application/{,g}zip", fg = "blue" },
+  { mime = "application/x-{tar,bzip*,7z-compressed,xz,rar}", fg = "blue" },
+  { name = "*/", fg = "blue", bold = true },
+
+  # Executables
+  { name = "*", is = "exec", fg = "green" },
+
+  # Broken / dummy
+  { name = "*", is = "orphan", bg = "red" },
+  { name = "*", is = "dummy", bg = "red" },
+  { name = "*/", is = "dummy", bg = "red" },
+]
+

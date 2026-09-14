@@ -1,11 +1,11 @@
 ---
 title: CLI Tools
-tags: [linux, cli, tools, reference]
+tags: [cli, tools, reference]
 ---
 
 # CLI Tools
 
-> Favorites: bat, fzf, zoxide, tldr, yazi
+> Favorites: bat, fzf, zoxide, tldr, yazi, pet
 > Mac Specific: mole, mackup, unp
 
 ## Core Replacements
@@ -19,6 +19,8 @@ tags: [linux, cli, tools, reference]
 | `dust`    | `du`     | Intuitive disk usage visualizer              |
 | `procs`   | `ps`     | Modern process viewer                        |
 | `btop`    | `top`    | Rich system and process monitor              |
+| `zoxide`  | `cd`     | Smarter cd (`z <dir>`)                       |
+
 
 ---
 
@@ -27,10 +29,11 @@ tags: [linux, cli, tools, reference]
 | Tool      | What it does                                        |
 | --------- | --------------------------------------------------- |
 | `fzf`     | General-purpose fuzzy finder — ctrl+r, ctrl+t       |
-| `zoxide`  | Smarter cd that learns your directories (`z <dir>`) |
 | `yazi`    | Terminal file manager with fzf + zoxide integration |
 | `tldr`    | Simplified, community-driven man pages              |
 | `thefuck` | Suggests the correct command after a mistake        |
+| `ttyd`    | Shell via Browser                                   |
+| `grex`    | Regex creator from provided samples                 |
 
 ---
 
@@ -57,7 +60,10 @@ tags: [linux, cli, tools, reference]
 | `shred`    | Securely delete files (overwrite before rm) |
 | `rsync`    | Fast, incremental file sync and backup      |
 | `wormhole` | Send files securely between machines        |
+| `croc`     | Also sends files but better                 |
 | `column`   | Format text into aligned columns            |
+| `faker`    | Generates fake data                         |
+
 
 ---
 

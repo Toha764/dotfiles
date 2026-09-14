@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+declare -r esc=$'\033'
+declare -r c_reset="${esc}[0m"
+declare -r c_red="${esc}[31m"
+
+err() {
+  printf "${c_red}%s${c_reset}\n" "$*" >&2
+}
+
+die() {
+  [[ -n "$1" ]] && err "$1"
+  exit 1
+}
+
+has() {
+  local verbose=0
+  if [[ $1 == '-v' ]]; then
+    verbose=1
+    shift
+  fi
+  for c; do c="${c%% *}"
+    if ! command -v "$c" &> /dev/null; then
+      (( verbose > 0 )) && err "$c not found"
+      return 1
+    fi
+  done
+}
+
+select_from() {
+  local o c cmd OPTARG OPTIND
+  cmd='command -v'
+  while getopts 'c:' o; do
+    case "$o" in
+      c) cmd="$OPTARG" ;;
+    esac
+  done
+  shift "$((OPTIND-1))"
+  for c; do
+    if $cmd "${c%% *}" &> /dev/null; then
+      echo "$c"
+      return 0
+    fi
+  done
+  return 1
+}
+
+openurl() {
+  local url="$1"
+  local browser
+  case "$url" in
+    *youtube.com*|*youtu.be*|*vimeo.com*)
+      browser=$(select_from mpv mplayer2 mplayer) ;;
+    *)
+      browser=$(select_from -c "pgrep -u $USER -i" firefox chromium-browser chrome)
+      [[ -z $browser ]] && browser='w3m' ;;
+  esac
+  $browser "$url"
+}
+
+has -v ddgr jq fzf || die
+
+if [[ -z "$*" ]]; then
+  die 'nothing to search for'
+fi
+
+response=$( ddgr --json --noprompt --expand "$*" ) || die 'error connecting to DuckDuckGo, check connection'
+json=$(jq -rc '. | map("\(.url)\t\(.title) - \(.abstract)") | .[]' <<< "$response") || die 'error parsing results :('
+url=$(fzf -e --ansi --cycle --inline-info --select-1 --with-nth=2.. <<< "$json" | awk '{print $1}')
+
+if [[ -n $url ]]; then
+  openurl "$url"
+fi

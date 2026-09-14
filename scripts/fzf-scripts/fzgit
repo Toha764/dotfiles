@@ -1,0 +1,360 @@
+#!/usr/bin/env bash
+
+declare -A aliases
+declare -A helptext
+declare -r c_reset=$(tput sgr0)
+declare -r c_red=$(tput setaf 1)
+declare -r c_green=$(tput setaf 2)
+declare -r c_yellow=$(tput setaf 3)
+declare -r c_grey=$(tput setaf 8)
+
+err() {
+  printf "${c_red}%s${c_reset}\n" "$*" >&2
+}
+
+die() {
+  if (($# > 0)); then
+    err "$@"
+  fi
+  exit 1
+}
+
+export COLUMNS
+
+has() {
+  local v c
+  if [[ $1 = '-v' ]]; then
+    v=1
+    shift
+  fi
+  for c; do
+    c="${c%% *}"
+    if ! command -v "$c" &>/dev/null; then
+      ((v > 0)) && err "$c not found"
+      return 1
+    fi
+  done
+}
+
+select_from() {
+  local cmd='command -v'
+  for a in "$@"; do
+    case "$a" in
+    -c)
+      cmd="$2"
+      shift 2
+      ;;
+    esac
+  done
+  for c in "$@"; do
+    if $cmd "${c%% *}" &>/dev/null; then
+      echo "$c"
+      return 0
+    fi
+  done
+  return 1
+}
+
+aliases[-h]=help
+aliases[--help]=help
+helptext[help]='show this help'
+subcmd_help() {
+  local formattedhelptext
+
+  formattedhelptext=$(for c in "${subcmds_avail[@]}"; do
+    printf "  %s\n    %s\n" "$c" "${helptext[$c]}"
+  done)
+  LESS=-FEXR less <<-HELP
+$0 <COMMAND>
+
+${formattedhelptext}
+HELP
+}
+
+basedir=$(basename $(git rev-parse --show-toplevel))
+
+# TODO: customization?
+branch_prefix='  '
+separator=' ❯ '
+
+diffprg=$(select_from 'delta -w ${FZF_PREVIEW_COLUMNS:-$COLUMNS}' 'bat --color=always -p' diff-so-fancy diff-highlight colordiff cat)
+
+fzf() {
+  local prompt
+  if [[ $1 == --prompt=* ]]; then
+    prompt="${1##*=}${separator}"
+    shift
+  fi
+  branch=$(__current_branch)
+  opts=(--prompt="${basedir}${branch_prefix}${branch}${separator}${prompt}")
+  command fzf $FZGIT_FZF_OPTS \
+    --inline-info \
+    --ansi \
+    "$@"
+}
+
+__current_branch() {
+  git name-rev --name-only HEAD
+}
+
+helptext[diff]='Show changes between commits, commit and working tree, etc'
+subcmd_diff() {
+  local listcmd="diff_histogram $*"
+  local diffcmd="git diff $*"
+  local statcmd="git diff --shortstat $*"
+
+  while :; do
+    watcher
+    curl -s --unix-socket /tmp/fzgit.sock http -d "reload($listcmd)+change-header($($statcmd))"
+  done &
+  listener_pid=$!
+
+  SHELL=bash fzf --prompt='diff $*' \
+    -d│ \
+    --listen=/tmp/fzgit.sock \
+    --header="$($statcmd)" \
+    --bind="start:reload:$listcmd" \
+    --nth=2.. \
+    --preview="$diffcmd -- {1} | $diffprg" \
+    --bind='ctrl-p:toggle-preview' \
+    --bind="enter:execute:$diffcmd -- {1} | $diffprg | less -R" \
+    --preview-window=70%,down
+}
+
+helptext[rebase]='Reapply commits on top of another base tip'
+subcmd_rebase() {
+  if (($# > 0)); then
+    git rebase "$@"
+    return
+  fi
+  local commit
+  commit=$(
+    git log \
+      --color=always \
+      --pretty=format:$'%h\t%C(dim yellow)%ar%C(reset)\t%s' "$@" |
+      fzf --prompt='rebase' \
+        --preview='git show --color=always {1}' \
+        --accept-nth=1
+  )
+  [[ -z $commit ]] && return
+  git rebase -i "$commit"
+}
+
+helptext[add]='Add file contents to the index'
+subcmd_add() {
+  if (($# > 0)); then
+    git add "$@"
+    return
+  fi
+  # TODO: split and make patches smaller
+  local listcmd="git diff --color=always | perl -pwe 's/^(\e\[[0-9;]*m)*(?=diff)/\0/m'"
+
+  while :; do
+    watcher
+    curl -s --unix-socket /tmp/fzgit.sock http -d "reload($listcmd)"
+  done &
+  listener_pid=$!
+
+  local diff
+  diff=$(SHELL=bash fzf \
+    --prompt='add' \
+    --disabled \
+    --read0 \
+    --listen=/tmp/fzgit.sock \
+    --bind="start:reload:$listcmd" \
+    --header='enter:stage | s:split patch' \
+    --expect=s \
+    --preview='git diff --staged | git apply --stat; git diff --staged --color=always')
+  [[ -z $diff ]] && return
+  if [[ $diff = s* ]]; then
+    split_patch <<<"${diff:2}"
+  else
+    # elif [[ $diff = a* ]]; then
+    patch="${diff:2}"
+    git apply --check --cached <<<"$patch" &&
+      git apply --cached <<<"$patch"
+  fi
+  subcmd_add
+}
+
+split_patch() {
+  local incomingpatch patches patch
+  read -r -d $'\0' incomingpatch
+  mapfile -d $'\0' -t patches < <(
+    perl -pwe 's/^(\e\[[0-9;]*m)*(?=@@)/\0/m' <<<"$incomingpatch"
+  )
+  bat --color=always --plain <<<"$incomingpatch" |
+    perl -pwe 's/(\e\[[0-9;]*m)*(?=@@)/\0/m' |
+    fzf \
+      --header-lines=1 \
+      --disabled \
+      --multi \
+      --read0 \
+      --bind="enter:execute(printf -v diff '%s' '${patches[0]}' {+}; git apply --cached <<< \$diff)+abort" \
+      --preview="printf -v diff '%s' '${patches[0]}' {+}; git apply --stat <<< \$diff; bat --color=always --plain <<< \"\$diff\""
+}
+
+helptext[log]='Show commit history'
+subcmd_log() {
+  git log --color=always --pretty=format:$'%h\t%C(dim yellow)%ar%C(reset)\t%s' "$@" |
+    fzf --prompt='log' \
+      --multi \
+      --track \
+      --header='enter:show  ctrl-d:diff  ctrl-p:print' \
+      --bind="enter:execute:git show {1} | $diffprg | less -R" \
+      --bind='ctrl-d:execute:fzgit diff {1}' \
+      --bind='ctrl-p:accept' \
+      --preview-window=80%,bottom \
+      --preview="git show {1} | $diffprg" |
+    awk '{print $1}'
+}
+
+helptext[status]='Show the working tree status'
+subcmd_status() {
+  local preview='git diff --color=always {2..}'
+  fzf --prompt='status' \
+    --nth=2.. \
+    --bind='start:reload:git -c color.status=always status -s' \
+    --preview="$preview" \
+    --bind='enter:execute:git add -p {2..}'
+}
+
+helptext[checkout]='Checkout a branch or paths to the working tree'
+subcmd_checkout() { # {{{
+  local branch header
+  if (($# > 0)); then
+    git checkout "$@"
+    return
+  fi
+  branch=$(__current_branch)
+  {
+    git branch --all --color -vv
+    git tag
+  } |
+    fzf --prompt='checkout' \
+      --header="$header" \
+      --bind=enter:execute:"git checkout \$(perl -pe 's/^\*?\s*(remotes\/[^\/]*\/)?([^ ]+).*/\2/' <<< {})"
+}
+
+helptext['stash-ls']='List the stash entries that you currently have'
+subcmd_stash-ls() {
+  if (($# > 0)); then
+    git stash "$@"
+    return
+  fi
+  local header='use ctrl-d to show a diff or ctrl-b to create a new branch'
+  git stash list --pretty="%C(yellow)%h %>(14)%Cgreen%cr %C(blue)%gs" |
+    fzf --prompt='stash' \
+      --no-sort \
+      --header="$header" \
+      --bind='ctrl-d:execute: git diff {1} --color=always | less -R' \
+      --bind='ctrl-b:execute(git stash branch "stash-{1}" {1})+abort' \
+      --preview='git diff --color {1}'
+}
+
+watcher() {
+  local files=("$(git rev-parse --show-toplevel)/.git/index")
+  while IFS= read -r f; do
+    [[ -e "$f" ]] && files+=("$f")
+  done < <(git ls-files)
+  inotifywait -q -e modify,attrib,close_write,move,create,delete "${files[@]}" &>/dev/null
+}
+export -f watcher
+
+diff_histogram() {
+  git diff --numstat "$@" | perl -e '
+    use strict;
+    use warnings;
+    my $green = `tput setaf 2`;
+    my $red = `tput setaf 1`;
+    my $reset = `tput sgr0`;
+    chomp($green, $red, $reset);
+    my (@files, @adds, @dels, @totals);
+    my $max = 0;
+
+    while (<>) {
+      my ($added, $deleted, $file) = split /\t/, $_, 3;
+      chomp $file;
+
+      # Skip binary files (git numstat outputs - for binary)
+      next if $added eq "-" || $deleted eq "-";
+
+      my $total = $added + $deleted;
+      $max = $total if $total > $max;
+
+      push @files, $file;
+      push @adds, $added;
+      push @dels, $deleted;
+      push @totals, $total;
+    }
+
+    my $maxlen = 0;
+    for (@files) {
+      $maxlen = length($_) if length($_) > $maxlen;
+    }
+
+    my $maxdigits = length($max);
+    for my $i (0 .. $#files) {
+      printf " %-*s │ ", $maxlen, $files[$i];
+      printf "%*d ", $maxdigits, $totals[$i];
+
+      if ($max > 0) {
+        my $graphwidth = 50;
+        my $bars = int($totals[$i] * $graphwidth / $max);
+        $bars = 1 if $bars == 0 && $totals[$i] > 0;
+
+        my $plus = int($adds[$i] * $bars / $totals[$i]);
+        my $minus = $bars - $plus;
+
+        print $green;
+        print "+" x $plus;
+        print $red;
+        print "-" x $minus;
+        print $reset;
+      }
+      print "\n";
+    }
+  '
+}
+export -f diff_histogram
+
+cleanup() {
+  if [[ -n $listener_pid ]] && kill -0 "$listener_pid" 2>/dev/null; then
+    kill "$listener_pid" 2>/dev/null
+    wait "$listener_pid" 2>/dev/null
+    listener_pid=''
+  fi
+}
+trap cleanup EXIT INT TERM
+
+has -v fzf perl git || die
+
+mapfile -t subcmds_avail < <(compgen -A function | awk '/^subcmd_/ { sub(/^subcmd_/, "", $0); print }')
+
+nocmd() {
+  local cmd
+  cmd=$(for c in "${subcmds_avail[@]}"; do
+    printf "%s\t%s\n" "$c" "${helptext[$c]}"
+  done)
+  cmd=$(column -t -s $'\t' <<<"$cmd" | fzf | awk '{print $1}')
+  if [[ -n $cmd ]]; then
+    subcmd_$cmd
+  else
+    exit 1
+  fi
+}
+
+if (($# < 1)); then
+  nocmd
+  exit 1
+elif has "subcmd_$1"; then
+  subcmd="subcmd_$1"
+  shift
+  "$subcmd" "$@"
+elif [[ -v aliases[$1] ]]; then
+  subcmd=subcmd_${aliases[$1]}
+  shift
+  "$subcmd" "$@"
+else
+  exec git "$@"
+fi

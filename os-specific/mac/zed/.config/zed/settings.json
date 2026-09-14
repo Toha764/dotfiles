@@ -45,7 +45,7 @@
   "ui_font_size": 12.0,
   "buffer_font_size": 18.0,
   "relative_line_numbers": "enabled",
-  "theme": "Catppuccin Macchiato",
+  "theme": "Ayu Light",
   "terminal": {
     "default_height": 500.0,
     "font_size": 20.0,

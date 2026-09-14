@@ -78,7 +78,7 @@ local function lsp_on_attach(ev)
 		require("fzf-lua").lsp_workspace_symbols()
 	end, opts) -- Zed: gS
 
-	vim.keymap.set("n", "cd", vim.lsp.buf.rename, opts) -- Zed: cd (rename)
+	vim.keymap.set("n", "grn", vim.lsp.buf.rename, opts) -- Zed: g r n (rename)
 	vim.keymap.set("n", "g.", vim.lsp.buf.code_action, opts) -- Zed: g. (code action)
 
 	vim.keymap.set("n", "gh", function()
@@ -90,20 +90,25 @@ local function lsp_on_attach(ev)
 	end, opts)
 
 	-- ── Zed-aligned diagnostic navigation ──────────────────────────
-	vim.keymap.set("n", "]d", function()
+	vim.keymap.set("n", "g]", function()
 		vim.diagnostic.jump({ count = 1 })
-	end, opts) -- Zed: ]d
+	end, opts) -- Zed: g ] (next diagnostic)
 
-	vim.keymap.set("n", "[d", function()
+	vim.keymap.set("n", "g[", function()
 		vim.diagnostic.jump({ count = -1 })
-	end, opts) -- Zed: [d
+	end, opts) -- Zed: g [ (prev diagnostic)
 
 	vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
 
-	-- ── Neovim-only: go-to-def in vsplit ───────────────────────────
+	-- ── Neovim-only: go-to-def / impl in vsplit ────────────────────
 	vim.keymap.set("n", "<leader>gS", function()
 		vim.cmd("vsplit")
 		vim.lsp.buf.definition()
+	end, opts)
+
+	vim.keymap.set("n", "<leader>gI", function()
+		vim.cmd("vsplit")
+		require("fzf-lua").lsp_implementations({ jump_to_single_result = true })
 	end, opts)
 
 	-- ── Secondary fzf-lua access (keep for multi-result browsing) ──

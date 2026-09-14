@@ -1,17 +1,16 @@
 # About
 
-This repo contains [scripts](./scripts/), [tools](./cli-tools.md), wallpapers, personal configuration files for mac, linux, and (no not you windows) created over the years.
-Also a list of useful **resources/contents** [here](./resource-archive.md)
+This repo contains [scripts](./scripts/scripts/), [tools](./cli-tools.md), wallpapers, personal configuration files for mac, linux, and (no not you windows) created over the years.
 
 ### Preview
 
 <p align="center">
   <img src="./preview/forest_example.png" width="800"><br>
-  <em>Forest Wallpaper — macOS</em>
+  <em>Forest Wallpaper - macOS</em>
 </p>
 
 
-# How to Setup
+# Setup
 
 Personal config files, managed with [GNU Stow](https://www.gnu.org/software/stow/).
 
@@ -63,7 +62,10 @@ cd ~/dotfiles
 ```
 ### 2. Apply configs
 
-```
+Use `./apply.sh mac` or  `./apply.sh linux` script
+or apply one by one manually
+
+```bash
 stow -d <source directory> -t ~ <package>
 ```
 
@@ -99,6 +101,13 @@ stow -d ~/dotfiles/os-agnostic -t ~ yazi
 
 # Or all of them at once
 cd ~/dotfiles/os-agnostic && stow -t ~ */
+```
+
+*Apply scripts:*
+
+```bash
+chmod +x ~/dotfiles/scripts/.scripts/*
+stow --dir=scripts --target=~ .scripts
 ```
 
 ---

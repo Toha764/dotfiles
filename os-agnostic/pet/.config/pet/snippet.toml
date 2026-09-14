@@ -401,3 +401,26 @@
   Tag = ["grep", "log"]
   command = "tail -f file.log | grep --line-buffered \"ERROR\""
 
+[[Snippets]]
+  Description = "Grab Login Details HTTP"
+  Output = ""
+  Tag = ["security", "dump"]
+  command = "sudo tcpdump -i <interface=en0> port <port=22> -l -A | egrep -i \\\n\t'pass=|pwd=|log=|login=|user=|username=|pw=|passw=|passwd=|password=|pass:|user:|username:|password:|login:|pass |user ' \\\n\t--color=auto --line-buffered -B20"
+
+[[Snippets]]
+  Description = "Check Realtime Network Traffic"
+  Output = ""
+  Tag = ["dump", "network"]
+  command = "sudo tcpdump -i en0 -nn -s0 -X 'host <host> and port <port=443>'"
+
+[[Snippets]]
+  Description = "Read Headers"
+  Output = ""
+  Tag = ["#curl"]
+  command = "curl -I http://"
+
+[[Snippets]]
+  Description = "Weather Info"
+  Output = ""
+  Tag = ["weather"]
+  command = "curl wttr.in/<location=dhaka>"

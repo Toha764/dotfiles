@@ -424,3 +424,45 @@
   Output = ""
   Tag = ["weather"]
   command = "curl wttr.in/<location=dhaka>"
+
+[[Snippets]]
+  Description = "Find files w/ size range"
+  Output = ""
+  Tag = ["find", "size"]
+  command = "find ./ -size +1000c -size -1200c"
+
+[[Snippets]]
+  Description = "Find Unique Lines"
+  Output = ""
+  Tag = ["sort", "unique"]
+  command = "sort <file> | uniq --unique"
+
+[[Snippets]]
+  Description = "Scan Open Ports"
+  Output = ""
+  Tag = ["port", "nmap"]
+  command = "nmap <host=localhost> -p <range=31000-32000>"
+
+[[Snippets]]
+  Description = "Find ports running SSL/TLS and Inspect Certificates"
+  Output = ""
+  Tag = []
+  command = "nmap -p <PORT_RANGE> --script ssl-cert <HOST>"
+
+[[Snippets]]
+  Description = "Scan a Host for Vulnerablities"
+  Output = ""
+  Tag = ["nmap", "vuln"]
+  command = "nmap --script vuln -p 22,80,443 <host-ip=localhost>"
+
+[[Snippets]]
+  Description = "Swap Capital <-> Small Letters"
+  Output = ""
+  Tag = ["fmt", "translate"]
+  command = "tr 'A-Za-z' 'a-zA-Z'"
+
+[[Snippets]]
+  Description = "Find Hidden Pages & Folders"
+  Output = ""
+  Tag = ["gobuster", "recon", "pentest"]
+  command = "gobuster dir -u http://testphp.vulnweb.com -w ~/SecLists/Discovery/Web-Content/common.txt"

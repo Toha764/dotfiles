@@ -89,7 +89,11 @@ export GOOGLE_CLIENT_SECRET="$(cat ~/.secrets/google/client_secret)"
 export PATH="$HOME/.scripts:$PATH"
 
 ### fuzzy obessesion ###
-alias fnv="nvim \$(fzf --preview 'bat --color=always {}')"               
+alias fnv="nvim \$(fzf --preview 'bat --color=always {}')"
 
 # sources
 for f in ~/.config/zsh/conf.d/*.zsh(N); do source "$f"; done
+
+
+# Added by Antigravity CLI installer
+export PATH="/Users/toha/.local/bin:$PATH"

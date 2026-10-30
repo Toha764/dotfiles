@@ -81,11 +81,6 @@ alias gl='git log --oneline --graph --all'
 alias gcreate='gh repo create --private --source=. --remote=origin'
 
 # exports
-export CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1
-export ANTHROPIC_BASE_URL="http://localhost:20128"
-export ANTHROPIC_AUTH_TOKEN="$(cat ~/.secrets/claude_key)"
-export GOOGLE_CLIENT_ID="$(cat ~/.secrets/google/client_id)"
-export GOOGLE_CLIENT_SECRET="$(cat ~/.secrets/google/client_secret)"
 export PATH="$HOME/.scripts:$PATH"
 
 ### fuzzy obessesion ###
@@ -93,7 +88,6 @@ alias fnv="nvim \$(fzf --preview 'bat --color=always {}')"
 
 # sources
 for f in ~/.config/zsh/conf.d/*.zsh(N); do source "$f"; done
-
 
 # Added by Antigravity CLI installer
 export PATH="/Users/toha/.local/bin:$PATH"

@@ -44,7 +44,7 @@
 [[Snippets]]
   Description = "listening tcp ports"
   Output = ""
-  Tag = ["network"]
+  Tag = ["network", "mac"]
   command = "sudo lsof -nP -iTCP -sTCP:LISTEN"
 
 [[Snippets]]
@@ -378,12 +378,6 @@
   command = "grep -E -C 2 \"[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}\" <file_name>"
 
 [[Snippets]]
-  Description = "monoc health check"
-  Output = ""
-  Tag = ["monoc"]
-  command = "ssh Blimp6233@vps2.ghos1y.com 'docker ps'"
-
-[[Snippets]]
   Description = "start omni monoc server"
   Output = ""
   Tag = ["monoc"]
@@ -466,3 +460,21 @@
   Output = ""
   Tag = ["gobuster", "recon", "pentest"]
   command = "gobuster dir -u http://testphp.vulnweb.com -w ~/SecLists/Discovery/Web-Content/common.txt"
+
+[[Snippets]]
+  Description = "listening tcp ports on linux"
+  Output = ""
+  Tag = ["linux", "network"]
+  command = "ss -tlpn | grep <port>"
+
+[[Snippets]]
+  Description = "port usage by process"
+  Output = ""
+  Tag = ["network"]
+  command = "lsof -i :<port>"
+
+[[Snippets]]
+  Description = "C to Assembly"
+  Output = ""
+  Tag = ["C", "Assembly"]
+  command = "gcc -S main.c"

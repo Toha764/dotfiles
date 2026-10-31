@@ -10,8 +10,10 @@ local diagnostic_signs = {
 	Info = "",
 }
 
+local diagnostic_virtual_text = { prefix = "●", spacing = 4 }
+
 vim.diagnostic.config({
-	virtual_text = { prefix = "●", spacing = 4 },
+	virtual_text = diagnostic_virtual_text,
 	signs = {
 		text = {
 			[vim.diagnostic.severity.ERROR] = diagnostic_signs.Error,
@@ -42,6 +44,22 @@ do
 	end
 end
 
+vim.keymap.set("n", "<leader>th", function()
+	local enabled = vim.lsp.inlay_hint.is_enabled({ bufnr = 0 })
+	vim.lsp.inlay_hint.enable(not enabled, { bufnr = 0 })
+	vim.notify("Inlay hints " .. (enabled and "disabled" or "enabled"))
+end, { desc = "Toggle inlay hints" })
+
+vim.keymap.set("n", "<leader>tv", function()
+	local enabled = vim.diagnostic.config().virtual_text ~= false
+	if enabled then
+		vim.diagnostic.config({ virtual_text = false })
+	else
+		vim.diagnostic.config({ virtual_text = diagnostic_virtual_text })
+	end
+	vim.notify("Diagnostic virtual text " .. (enabled and "disabled" or "enabled"))
+end, { desc = "Toggle diagnostic virtual text" })
+
 local function lsp_on_attach(ev)
 	local client = vim.lsp.get_client_by_id(ev.data.client_id)
 	if not client then
@@ -49,96 +67,72 @@ local function lsp_on_attach(ev)
 	end
 
 	local bufnr = ev.buf
-	local opts = { noremap = true, silent = true, buffer = bufnr }
+
+	local function map(lhs, rhs, desc)
+		vim.keymap.set("n", lhs, rhs, {
+			noremap = true,
+			silent = true,
+			buffer = bufnr,
+			desc = desc,
+		})
+	end
 
 	-- ── Zed-aligned LSP keys ────────────────────────────────────────
-	vim.keymap.set("n", "gd", function()
+	map("gd", function()
 		require("fzf-lua").lsp_definitions({ jump_to_single_result = true })
-	end, opts) -- Zed: gd
+	end, "Go to definition") -- Zed: gd
 
-	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts) -- Zed: gD
+	map("gD", vim.lsp.buf.declaration, "Go to declaration") -- Zed: gD
 
-	vim.keymap.set("n", "gy", function()
+	map("gy", function()
 		require("fzf-lua").lsp_typedefs()
-	end, opts) -- Zed: gy
+	end, "Go to type definition") -- Zed: gy
 
-	vim.keymap.set("n", "gI", function()
+	map("gI", function()
 		require("fzf-lua").lsp_implementations()
-	end, opts) -- Zed: gI
+	end, "Go to implementation") -- Zed: gI
 
-	vim.keymap.set("n", "gA", function()
+	map("gA", function()
 		require("fzf-lua").lsp_references()
-	end, opts) -- Zed: gA
+	end, "Find references") -- Zed: gA
 
-	vim.keymap.set("n", "gs", function()
+	map("gs", function()
 		require("fzf-lua").lsp_document_symbols()
-	end, opts) -- Zed: gs
+	end, "Document symbols") -- Zed: gs
 
-	vim.keymap.set("n", "gS", function()
-		require("fzf-lua").lsp_workspace_symbols()
-	end, opts) -- Zed: gS
+	if client:supports_method("workspace/symbol", bufnr) then
+		local workspace_symbols = function()
+			require("fzf-lua").lsp_workspace_symbols()
+		end
+		map("gS", workspace_symbols, "Workspace symbols") -- Zed: gS
+	end
 
-	vim.keymap.set("n", "grn", vim.lsp.buf.rename, opts) -- Zed: g r n (rename)
-	vim.keymap.set("n", "g.", vim.lsp.buf.code_action, opts) -- Zed: g. (code action)
+	map("grn", vim.lsp.buf.rename, "Rename symbol") -- Zed: g r n (rename)
+	map("g.", vim.lsp.buf.code_action, "Code action") -- Zed: g. (code action)
 
-	vim.keymap.set("n", "gh", function()
+	map("gh", function()
 		vim.diagnostic.open_float({ scope = "cursor" })
-	end, opts) -- Zed: gh (hover diagnostic)
-
-	vim.keymap.set("n", "<leader>D", function()
-		vim.diagnostic.open_float({ scope = "line" })
-	end, opts)
+	end, "Diagnostics for cursor") -- Zed: gh (hover diagnostic)
 
 	-- ── Zed-aligned diagnostic navigation ──────────────────────────
-	vim.keymap.set("n", "g]", function()
+	map("g]", function()
 		vim.diagnostic.jump({ count = 1 })
-	end, opts) -- Zed: g ] (next diagnostic)
+	end, "Next diagnostic") -- Zed: g ] (next diagnostic)
 
-	vim.keymap.set("n", "g[", function()
+	map("g[", function()
 		vim.diagnostic.jump({ count = -1 })
-	end, opts) -- Zed: g [ (prev diagnostic)
+	end, "Previous diagnostic") -- Zed: g [ (prev diagnostic)
 
-	vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-
-	-- ── Neovim-only: go-to-def / impl in vsplit ────────────────────
-	vim.keymap.set("n", "<leader>gS", function()
-		vim.cmd("vsplit")
-		vim.lsp.buf.definition()
-	end, opts)
-
-	vim.keymap.set("n", "<leader>gI", function()
-		vim.cmd("vsplit")
-		require("fzf-lua").lsp_implementations({ jump_to_single_result = true })
-	end, opts)
-
-	-- ── Secondary fzf-lua access (keep for multi-result browsing) ──
-	vim.keymap.set("n", "<leader>fr", function()
-		require("fzf-lua").lsp_references()
-	end, opts)
-	vim.keymap.set("n", "<leader>ft", function()
-		require("fzf-lua").lsp_typedefs()
-	end, opts)
-	vim.keymap.set("n", "<leader>fs", function()
-		require("fzf-lua").lsp_document_symbols()
-	end, opts)
-	vim.keymap.set("n", "<leader>fw", function()
-		require("fzf-lua").lsp_workspace_symbols()
-	end, opts)
-	vim.keymap.set("n", "<leader>fi", function()
-		require("fzf-lua").lsp_implementations()
-	end, opts)
+	map("K", vim.lsp.buf.hover, "Hover documentation")
 
 	if client:supports_method("textDocument/codeAction", bufnr) then
-		vim.keymap.set("n", "<leader>oi", function()
+		map("<leader>oi", function()
 			vim.lsp.buf.code_action({
 				context = { only = { "source.organizeImports" }, diagnostics = {} },
 				apply = true,
 				bufnr = bufnr,
 			})
-			vim.defer_fn(function()
-				vim.lsp.buf.format({ bufnr = bufnr })
-			end, 50)
-		end, opts)
+		end, "Organize imports")
 	end
 end
 
@@ -148,6 +142,8 @@ vim.keymap.set("n", "<leader>q", function()
 	vim.diagnostic.setloclist({ open = true })
 end, { desc = "Open diagnostic list" })
 vim.keymap.set("n", "<leader>dl", vim.diagnostic.open_float, { desc = "Show line diagnostics" })
+
+require("luasnip.loaders.from_vscode").lazy_load()
 
 require("blink.cmp").setup({
 	keymap = {
@@ -203,10 +199,8 @@ do
 	local flake8 = require("efmls-configs.linters.flake8")
 	local black = require("efmls-configs.formatters.black")
 
-	local prettier_d = require("efmls-configs.formatters.prettier_d")
+	local prettier = require("efmls-configs.formatters.prettier")
 	local eslint_d = require("efmls-configs.linters.eslint_d")
-
-	local fixjson = require("efmls-configs.formatters.fixjson")
 
 	local shellcheck = require("efmls-configs.linters.shellcheck")
 	local shfmt = require("efmls-configs.formatters.shfmt")
@@ -243,20 +237,20 @@ do
 				c = { clangfmt, cpplint },
 				go = { gofumpt, go_revive },
 				cpp = { clangfmt, cpplint },
-				css = { prettier_d },
-				html = { prettier_d },
-				javascript = { eslint_d, prettier_d },
-				javascriptreact = { eslint_d, prettier_d },
-				json = { eslint_d, fixjson },
-				jsonc = { eslint_d, fixjson },
+				css = { prettier },
+				html = { prettier },
+				javascript = { eslint_d, prettier },
+				javascriptreact = { eslint_d, prettier },
+				json = { eslint_d, prettier },
+				jsonc = { eslint_d, prettier },
 				lua = { luacheck, stylua },
-				markdown = { prettier_d },
+				markdown = { prettier },
 				python = { flake8, black },
 				sh = { shellcheck, shfmt },
-				typescript = { eslint_d, prettier_d },
-				typescriptreact = { eslint_d, prettier_d },
-				vue = { eslint_d, prettier_d },
-				svelte = { eslint_d, prettier_d },
+				typescript = { eslint_d, prettier },
+				typescriptreact = { eslint_d, prettier },
+				vue = { eslint_d, prettier },
+				svelte = { eslint_d, prettier },
 			},
 		},
 	})
@@ -271,3 +265,7 @@ vim.lsp.enable({
 	"clangd",
 	"efm",
 })
+
+vim.keymap.set("n", "<leader>ow", function()
+	require("fzf-lua").lsp_workspace_symbols()
+end, { desc = "Workspace symbols" })

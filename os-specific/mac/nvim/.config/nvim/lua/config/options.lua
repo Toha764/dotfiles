@@ -21,9 +21,10 @@ vim.opt.hlsearch = true -- highlight search matches
 vim.opt.incsearch = true -- show matches as you type
 
 vim.opt.signcolumn = "yes" -- always show a sign column
-vim.opt.colorcolumn = "100" -- show a column at 100 position chars
 vim.opt.showmatch = true -- highlights matching brackets
 vim.opt.cmdheight = 1 -- single line command line
+vim.opt.confirm = true -- ask to save instead of failing
+vim.opt.winborder = "rounded" -- default border for floating windows
 vim.opt.completeopt = "menuone,noinsert,noselect" -- completion options
 vim.opt.showmode = false -- do not show the mode, instead have it in statusline
 vim.opt.pumheight = 10 -- popup menu height

@@ -3,6 +3,7 @@
 -- ============================================================================
 
 local augroup = vim.api.nvim_create_augroup("UserConfig", { clear = true })
+vim.g.autoformat = false
 
 -- Format on save (ONLY real file buffers, ONLY when efm is attached)
 vim.api.nvim_create_autocmd("BufWritePre", {
@@ -16,9 +17,13 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 		"*.ts",
 		"*.tsx",
 		"*.json",
+		"*.jsonc",
 		"*.css",
 		"*.scss",
 		"*.html",
+		"*.md",
+		"*.vue",
+		"*.svelte",
 		"*.sh",
 		"*.bash",
 		"*.zsh",
@@ -28,6 +33,9 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 		"*.hpp",
 	},
 	callback = function(args)
+		if vim.g.autoformat == false then
+			return
+		end
 		-- avoid formatting non-file buffers (helps prevent weird write prompts)
 		if vim.bo[args.buf].buftype ~= "" then
 			return
@@ -41,22 +49,26 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 
 		local has_efm = false
 		for _, c in ipairs(vim.lsp.get_clients({ bufnr = args.buf })) do
-			if c.name == "efm" then
+			if c.name == "efm" and c:supports_method("textDocument/formatting", args.buf) then
 				has_efm = true
 				break
 			end
 		end
 		if not has_efm then
+			vim.notify_once("Format on save is enabled, but no EFM formatter is attached to this buffer", vim.log.levels.WARN)
 			return
 		end
 
-		pcall(vim.lsp.buf.format, {
+		local ok, err = pcall(vim.lsp.buf.format, {
 			bufnr = args.buf,
 			timeout_ms = 2000,
 			filter = function(c)
 				return c.name == "efm"
 			end,
 		})
+		if not ok then
+			vim.notify("Format on save failed: " .. tostring(err), vim.log.levels.ERROR)
+		end
 	end,
 })
 
@@ -86,6 +98,16 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 		end
 
 		pcall(vim.api.nvim_win_set_cursor, 0, last_pos)
+	end,
+})
+
+-- reload files changed outside Neovim (branch switch, formatter, other editor)
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
+	group = augroup,
+	callback = function()
+		if vim.fn.mode() ~= "c" then
+			vim.cmd("checktime")
+		end
 	end,
 })
 

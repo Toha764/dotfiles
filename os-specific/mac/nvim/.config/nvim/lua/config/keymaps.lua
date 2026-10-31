@@ -8,7 +8,7 @@ vim.keymap.set("i", "jj", "<Esc>", { noremap = true, silent = true })
 -- copy/paste
 vim.keymap.set("n", "<C-a>", "ggVG\"+y", { desc = "Select all + copy" })
 vim.keymap.set("x", "<leader>p", '"_dP', { desc = "Paste without yanking" })
-vim.keymap.set({ "n", "v" }, "<leader>d", '"_d', { desc = "Delete without yanking" })
+vim.keymap.set("v", "<leader>d", '"_d', { desc = "Delete without yanking" })
 
 -- yazi opener 
 vim.keymap.set("n", "<leader>e", function()
@@ -24,6 +24,7 @@ vim.keymap.set("n", "k", function()
 end, { expr = true, silent = true, desc = "Up (wrap-aware)" })
 
 vim.keymap.set("n", "<leader>c", ":nohlsearch<CR>", { desc = "Clear search highlights" })
+vim.keymap.set("n", "<Esc>", ":nohlsearch<CR>", { desc = "Clear search highlights", silent = true })
 
 -- page up/down
 vim.keymap.set("n", "n", "nzzzv", { desc = "Next search result (centered)" })
@@ -58,15 +59,41 @@ vim.keymap.set("n", "<leader>pa", function() -- show file path
 	print("file:", path)
 end, { desc = "Copy full file path" })
 
+vim.keymap.set("n", "<leader>pr", function() -- show relative file path
+	local path = vim.fn.expand("%:.")
+	vim.fn.setreg("+", path)
+	print("file:", path)
+end, { desc = "Copy relative file path" })
+
 vim.keymap.set("n", "<leader>td", function()
 	vim.diagnostic.enable(not vim.diagnostic.is_enabled())
 end, { desc = "Toggle diagnostics" })
+
+vim.keymap.set("n", "<leader>tf", function()
+	vim.g.autoformat = vim.g.autoformat == false
+	vim.notify("Format on save " .. (vim.g.autoformat and "enabled" or "disabled"))
+end, { desc = "Toggle format on save" })
 
 vim.keymap.set("n", "<leader>w", ":w<CR>", { desc = "Save file", silent = true })
 
 vim.keymap.set("n", "<leader>bd", function()
 	require("mini.bufremove").delete(0, false)
 end, { desc = "Delete buffer (keep window)" })
+
+vim.keymap.set("n", "<leader>be", function()
+	vim.cmd.enew()
+	vim.bo.buflisted = true
+end, { desc = "New empty buffer" })
+
+vim.keymap.set("n", "<leader>bn", ":bnext<CR>", { desc = "Next buffer" })
+vim.keymap.set("n", "<leader>bp", ":bprevious<CR>", { desc = "Previous buffer" })
+vim.keymap.set("n", "<leader>bo", function()
+	for _, info in ipairs(vim.fn.getbufinfo({ buflisted = 1 })) do
+		if info.bufnr ~= vim.api.nvim_get_current_buf() then
+			pcall(vim.api.nvim_buf_delete, info.bufnr, { force = false })
+		end
+	end
+end, { desc = "Close other buffers" })
 
 vim.keymap.set("n", "<C-Up>", ":resize +2<CR>", { desc = "Increase window height", silent = true })
 vim.keymap.set("n", "<C-Down>", ":resize -2<CR>", { desc = "Decrease window height", silent = true })

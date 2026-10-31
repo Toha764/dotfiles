@@ -7,8 +7,8 @@ theme = Black Metal (Nile)
 cursor-color = #e0def4
 
 # Colors 
-background = #000000
-foreground = #cfcfcf
+background = #1f1f28
+foreground = #dcd7ba
 selection-background = #222222
 
 #custom-shader = ~/.config/ghostty/shaders/retro-term.glsl
@@ -40,11 +40,11 @@ window-padding-y = 4
 window-padding-balance = true
 
 # subtle depth
-background-opacity = 0.75
-background-blur-radius = 10
+background-opacity = 1
+background-blur-radius = 0
 
 # split aesthetics
-unfocused-split-opacity = 0.65
+unfocused-split-opacity = 1
 split-divider-color = #44415a
 
 # -----------------------------

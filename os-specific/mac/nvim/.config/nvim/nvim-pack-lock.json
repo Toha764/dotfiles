@@ -13,9 +13,17 @@
       "src": "https://github.com/saghen/blink.cmp",
       "version": "1.0.0 - 2.0.0"
     },
+    "catppuccin": {
+      "rev": "edefef779ab08ce1a4a404713e3012b0d202bd35",
+      "src": "https://github.com/catppuccin/nvim"
+    },
     "efmls-configs-nvim": {
       "rev": "0b0ca5462a0a9c1233cc8359e64741d7d49fbbe4",
       "src": "https://github.com/creativenull/efmls-configs-nvim"
+    },
+    "friendly-snippets": {
+      "rev": "b2ea5c41a150ba72fb656eedb4ed0a86d138d945",
+      "src": "https://github.com/rafamadriz/friendly-snippets"
     },
     "fzf-lua": {
       "rev": "9f0432fdd7825ab163520045831a40b6df82ea28",
@@ -24,6 +32,14 @@
     "gitsigns.nvim": {
       "rev": "0d797daee85366bc242580e352a4f62d67557b84",
       "src": "https://www.github.com/lewis6991/gitsigns.nvim"
+    },
+    "gruvbox.nvim": {
+      "rev": "154eb5ff5b96d0641307113fa385eaf0d36d9796",
+      "src": "https://github.com/ellisonleao/gruvbox.nvim"
+    },
+    "kanagawa.nvim": {
+      "rev": "bb85e4bfc8d89b0e62c8fa53ccdd13d12e2f77b3",
+      "src": "https://github.com/rebelot/kanagawa.nvim"
     },
     "leetcode.nvim": {
       "rev": "fdd3f91800b3983e27bc9fcfb99cfa7293d7f11a",
@@ -53,10 +69,6 @@
       "rev": "bedca8b426b2fee0ccac596d167d71bbe971253f",
       "src": "https://www.github.com/neovim/nvim-lspconfig"
     },
-    "nvim-tree.lua": {
-      "rev": "509962f21ab7289d8dcd28568af539be39a8c01e",
-      "src": "https://www.github.com/nvim-tree/nvim-tree.lua"
-    },
     "nvim-treesitter": {
       "rev": "4916d6592ede8c07973490d9322f187e07dfefac",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
@@ -76,6 +88,10 @@
     "smear-cursor.nvim": {
       "rev": "9e9378d6ee34bb3782e0e8c63d9ec8ca618b479b",
       "src": "https://github.com/sphamba/smear-cursor.nvim"
+    },
+    "tokyonight.nvim": {
+      "rev": "cdc07ac78467a233fd62c493de29a17e0cf2b2b6",
+      "src": "https://github.com/folke/tokyonight.nvim"
     },
     "vision.nvim": {
       "rev": "af61e743cd558363f5747cd073c916abd408b1e7",

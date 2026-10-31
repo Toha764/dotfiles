@@ -6,12 +6,17 @@ vim.pack.add({
 	{ src = "https://github.com/nvim-tree/nvim-web-devicons" },
 	{ src = "https://github.com/nvim-lualine/lualine.nvim" },
 
+	-- Themes
+	{ src = "https://github.com/rebelot/kanagawa.nvim" },
+	{ src = "https://github.com/catppuccin/nvim", name = "catppuccin" },
+	{ src = "https://github.com/folke/tokyonight.nvim" },
+	{ src = "https://github.com/ellisonleao/gruvbox.nvim" },
+
 	-- Core
 	{ src = "https://github.com/lewis6991/gitsigns.nvim" },
 	{ src = "https://github.com/echasnovski/mini.nvim" },
 	{ src = "https://github.com/folke/which-key.nvim" },
 	{ src = "https://github.com/ibhagwan/fzf-lua" },
-	{ src = "https://github.com/nvim-tree/nvim-tree.lua" },
 	{ src = "https://github.com/mikavilpas/yazi.nvim" },
 
 	-- Treesitter
@@ -30,6 +35,7 @@ vim.pack.add({
 		version = vim.version.range("1.*"),
 	},
 	{ src = "https://github.com/L3MON4D3/LuaSnip" },
+	{ src = "https://github.com/rafamadriz/friendly-snippets" },
 
 	-- Misc
 	{ src = "https://github.com/goolord/alpha-nvim" },
@@ -57,11 +63,15 @@ end
 packadd("nvim-web-devicons")
 packadd("lualine.nvim")
 
+packadd("kanagawa.nvim")
+packadd("catppuccin")
+packadd("tokyonight.nvim")
+packadd("gruvbox.nvim")
+
 packadd("gitsigns.nvim")
 packadd("mini.nvim")
 packadd("which-key.nvim")
 packadd("fzf-lua")
-packadd("nvim-tree.lua")
 packadd("yazi.nvim")
 
 packadd("nvim-treesitter")
@@ -78,6 +88,7 @@ packadd("mason.nvim")
 packadd("efmls-configs-nvim")
 packadd("blink.cmp")
 packadd("LuaSnip")
+packadd("friendly-snippets")
 packadd("smear-cursor.nvim")
 
 -- extra

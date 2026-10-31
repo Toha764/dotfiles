@@ -1,13 +1,16 @@
-vim.deprecate = function() end
+vim.loader.enable()
 
-require("config.theme") -- colorscheme + transparency
-require("config.options") -- vim.opt settings
+require("config.options") -- vim.opt settings (before themes)
 require("config.keymaps") -- keybindings
--- require("config.statusline") -- custom statusline
 require("config.plugins") -- vim.pack.add + packadd
+require("config.which-key") -- key hints + group names
+require("config.theme") -- colorscheme + transparency
 
 require("config.lualine")
 require("config.autocmds") -- autocommands
+require("config.terminal") -- floating terminal
+require("config.mini") -- MiniTrailspace is used by the save hooks
+require("config.runner") -- run current source file
 require("config.alpha")
 require("config.leet")
 require("config.colorizer")
@@ -19,8 +22,7 @@ require("config.yazi")
 require("config.fzf")
 require("config.gitsigns")
 require("config.lsp") -- LSP + blink.cmp + efm
-require("config.terminal") -- floating terminal
-require("config.mini")
+require("config.git") -- git pickers + lazygit
 require("config.markdown")
 require("config.smear-cursor") -- smear cursor effect
 

@@ -41,5 +41,3 @@ end, { desc = "Toggle inline blame" })
 vim.keymap.set("n", "<leader>hd", function()
 	require("gitsigns").diffthis()
 end, { desc = "Diff this" })
-
-require("which-key").setup({})

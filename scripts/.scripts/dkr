@@ -1,4 +1,9 @@
 #!/opt/homebrew/bin/bash
+# Purpose: Browse running Docker containers, view their logs, open a shell, or stop them.
+# Usage: Run dkr to choose a command, or run dkr ps to browse containers.
+# Requirements: Apple Silicon Homebrew Bash 4+, fzf, Docker, and a running Docker daemon.
+# Supported systems: macOS on Apple Silicon.
+# Controls: Enter opens a shell. Ctrl-D stops the selected container.
 
 declare -A aliases
 declare -A helptext

@@ -1,2 +1,38 @@
 [flavor]
 dark = "gruvbox-material"
+light = "gruvbox-material"
+
+[mgr]
+cwd = { fg = "#d79921", bold = true }
+
+[status]
+overall = { fg = "#ebdbb2", bg = "#282828" }
+perm_type = { fg = "lightgreen" }
+perm_read = { fg = "lightyellow" }
+perm_write = { fg = "lightred" }
+perm_exec = { fg = "lightcyan" }
+
+[filetype]
+rules = [
+  # Images
+  { mime = "image/*", fg = "yellow" },
+
+  # Documents / media-ish
+  { mime = "application/{epub*,pdf,doc,rtf,vnd.*}", fg = "yellow" },
+  { mime = "{audio,video}/*", fg = "magenta" },
+
+  # Links
+  { url = "*", is = "link", fg = "cyan" },
+  { url = "*/", is = "link", fg = "cyan", bold = true },
+
+  # Archives
+  { mime = "application/{,g}zip", fg = "blue" },
+  { mime = "application/x-{tar,bzip*,7z-compressed,xz,rar}", fg = "blue" },
+  { url = "*/", fg = "blue", bold = true },
+
+  # Executables
+  { url = "*", is = "exec", fg = "green" },
+
+  # Broken / dummy
+  { url = "*", is = "orphan", bg = "red" },
+]

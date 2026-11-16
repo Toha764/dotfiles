@@ -11,9 +11,14 @@ export FZF_CTRL_R_OPTS="
   --bind '?:toggle-preview'
   --bind 'alt-s:execute(pet new --tag {2..})+abort'"
 
+(( $+commands[pet] )) || return 0
+
 # ^s — replace buffer with snippet
 function pet-select() {
-  BUFFER=$(pet search --query "$LBUFFER" </dev/tty)
+  local snippet
+  snippet=$(pet search --query "$LBUFFER" </dev/tty) || return
+  [[ -n "$snippet" ]] || return
+  BUFFER=$snippet
   CURSOR=$#BUFFER
   zle redisplay
 }
@@ -23,8 +28,13 @@ bindkey '^s' pet-select
 # ^p — append snippet to buffer with pipe
 function pet-pipe() {
   local snippet
-  snippet=$(pet search --query "" </dev/tty)
-  [ -n "$snippet" ] && LBUFFER="${LBUFFER} | ${snippet}"
+  snippet=$(pet search --query "" </dev/tty) || return
+  [[ -n "$snippet" ]] || return
+  if [[ -n "${LBUFFER//[[:space:]]/}" ]]; then
+    LBUFFER="${LBUFFER} | ${snippet}"
+  else
+    LBUFFER=$snippet
+  fi
   zle redisplay
 }
 zle -N pet-pipe
@@ -47,4 +57,4 @@ function _pet_move_cursor_to_next_parameter() {
 zle -N _pet_move_cursor_to_next_parameter
 bindkey '^n' _pet_move_cursor_to_next_parameter
 
-stty -ixon
+[[ -t 0 ]] && stty -ixon

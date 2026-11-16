@@ -1,0 +1,370 @@
+#!/usr/bin/env python3
+"""Pick and resume saved sessions from supported AI command-line tools.
+
+Usage:
+  pik [--client NAME] [--project PATH_OR_NAME]
+  pik --list [--client NAME] [--project PATH_OR_NAME]
+
+Use the fzf picker to search by client, title, project path, or session ID.
+Use --client or --agent to filter by client. Use --project to filter by path.
+Use --list to print matching sessions without opening the picker.
+
+Requirements: Python 3.9+. fzf is required unless you use --list
+Supported systems: macOS and Linux
+Resume: Select a session and press Enter. Press Ctrl-D, then confirm, to delete it
+Sources: OMP, Pi, Codex, Claude Code, Gemini CLI, and OpenCode. DeepSeek sessions appear under OpenCode
+Resume and delete actions need the matching client command on PATH
+"""
+
+# TODO: add a preview pane. limitation: too little space
+
+import argparse
+import json
+import os
+from datetime import datetime
+from pathlib import Path
+import shutil
+import sqlite3
+import subprocess
+import sys
+
+
+def read_jsonl(path):
+    try:
+        with path.open(encoding="utf-8") as stream:
+            for line in stream:
+                try:
+                    yield json.loads(line)
+                except (json.JSONDecodeError, UnicodeDecodeError):
+                    continue
+    except (OSError, UnicodeDecodeError):
+        return
+
+
+def clean(value):
+    value = "".join(" " if ord(char) < 32 or ord(char) == 127 else char for char in str(value or ""))
+    return " ".join(value.split())
+
+
+def session_time(value, path):
+    try:
+        if isinstance(value, (int, float)):
+            timestamp = float(value)
+            return timestamp / 1000 if abs(timestamp) >= 100_000_000_000 else timestamp
+        if value:
+            return datetime.fromisoformat(str(value).replace("Z", "+00:00")).timestamp()
+    except (OverflowError, OSError, ValueError):
+        pass
+    try:
+        return path.stat().st_mtime if path else 0
+    except OSError:
+        return 0
+
+
+
+def delete_record(record):
+    agent = record["agent"]
+    if agent == "Codex":
+        command = ["codex", "delete", "--force", record["id"]]
+    elif agent.startswith("OpenCode"):
+        command = ["opencode", "session", "delete", record["id"]]
+    else:
+        try:
+            Path(record["path"]).unlink()
+            return True
+        except OSError as exc:
+            print(f"pik: cannot delete session: {exc}", file=sys.stderr)
+            return False
+    if not shutil.which(command[0]):
+        print(f"pik: {command[0]} is not installed or not on PATH", file=sys.stderr)
+        return False
+    return subprocess.run(command).returncode == 0
+
+
+def add(records, agent, title, cwd, session_id, resume_path="", updated=None):
+    if not session_id:
+        return
+    path = Path(resume_path) if resume_path else None
+    records.append({
+        "agent": agent,
+        "title": clean(title) or "Untitled session",
+        "cwd": clean(cwd),
+        "id": clean(session_id),
+        "path": str(resume_path),
+        "updated": session_time(updated, path),
+    })
+
+
+def omp_sessions(home):
+    root = Path(os.environ.get("PI_CODING_AGENT_DIR", home / ".omp/agent")) / "sessions"
+    records = []
+    if not root.is_dir():
+        return records
+    for path in root.rglob("*.jsonl"):
+        session = {}
+        title = ""
+        updated = None
+        for row in read_jsonl(path):
+            if row.get("type") == "session":
+                session = row
+                updated = row.get("timestamp")
+            elif row.get("type") == "title":
+                title = row.get("title", "")
+                updated = row.get("updatedAt") or updated
+            if session and title:
+                break
+        if session.get("id"):
+            add(records, "OMP", title, session.get("cwd"), session["id"], path, updated)
+    return records
+
+def pi_sessions(home):
+    root = Path(os.environ.get("PI_CODING_AGENT_DIR", home / ".pi/agent")) / "sessions"
+    records = []
+    if not root.is_dir():
+        return records
+    for path in root.rglob("*.jsonl"):
+        session = {}
+        title = ""
+        for row in read_jsonl(path):
+            if row.get("type") == "session":
+                session = row
+            elif row.get("type") == "message":
+                message = row.get("message", {})
+                if message.get("role") == "user" and not title:
+                    content = message.get("content", "")
+                    if isinstance(content, list):
+                        content = " ".join(part.get("text", "") for part in content if isinstance(part, dict))
+                    title = clean(content)
+            if session and title:
+                break
+        if session.get("id"):
+            add(records, "Pi", title, session.get("cwd"), session["id"], path)
+    return records
+
+
+def opencode_sessions(home):
+    candidates = (
+        Path(os.environ.get("XDG_DATA_HOME", home / ".local/share")) / "opencode/opencode.db",
+        home / "Library/Application Support/opencode/opencode.db",
+    )
+    database = next((path for path in candidates if path.is_file()), None)
+    if database is None:
+        return []
+    records = []
+    try:
+        with sqlite3.connect(f"{database.as_uri()}?mode=ro", uri=True) as connection:
+            rows = connection.execute(
+                """SELECT s.id, s.title, s.directory, s.time_updated, s.agent, s.model,
+                          (SELECT m.data FROM message AS m
+                           WHERE m.session_id = s.id ORDER BY m.time_created DESC LIMIT 1)
+                   FROM session AS s WHERE s.time_archived IS NULL
+                   ORDER BY s.time_updated DESC"""
+            )
+            for session_id, title, cwd, updated, agent, model, message_data in rows:
+                provider = ""
+                if message_data:
+                    try:
+                        message = json.loads(message_data)
+                        model = model or message.get("modelID") or message.get("model", {}).get("modelID")
+                        provider = message.get("providerID") or message.get("model", {}).get("providerID", "")
+                    except (json.JSONDecodeError, AttributeError):
+                        pass
+                label = "OpenCode/DeepSeek" if "deepseek" in f"{model or ''} {provider}".lower() else "OpenCode"
+                add(records, label, title, cwd, session_id, updated=updated)
+    except (OSError, sqlite3.Error):
+        return []
+    return records
+
+
+def deepseek_sessions(home):
+    return [row for row in opencode_sessions(home) if row["agent"] == "OpenCode/DeepSeek"]
+
+
+def codex_sessions(home):
+    codex_home = Path(os.environ.get("CODEX_HOME", home / ".codex"))
+    latest = {}
+    for row in read_jsonl(codex_home / "session_index.jsonl"):
+        session_id = row.get("id")
+        if session_id:
+            latest[session_id] = row
+    cwd_by_id = {}
+    paths_by_id = {}
+    session_root = codex_home / "sessions"
+    if session_root.is_dir():
+        for path in session_root.rglob("*.jsonl"):
+            header = next(read_jsonl(path), {})
+            if header.get("type") == "session_meta":
+                metadata = header.get("payload", {})
+                session_id = metadata.get("session_id") or metadata.get("id")
+                if session_id in latest:
+                    cwd_by_id[session_id] = metadata.get("cwd", "")
+                    paths_by_id[session_id] = path
+    records = []
+    for session_id, row in latest.items():
+        add(records, "Codex", row.get("thread_name"), cwd_by_id.get(session_id, ""), session_id,
+            paths_by_id.get(session_id, ""), row.get("updated_at"))
+    return records
+
+def claude_sessions(home):
+    root = Path(os.environ.get("CLAUDE_CONFIG_DIR", home / ".claude")) / "projects"
+    records = []
+    if not root.is_dir():
+        return records
+    for path in root.glob("*/*.jsonl"):
+        session_id, cwd, title = "", "", ""
+        for row in read_jsonl(path):
+            session_id = session_id or row.get("sessionId", "")
+            cwd = cwd or row.get("cwd", "")
+            message = row.get("message", {})
+            if not title and row.get("type") == "user" and message.get("role") == "user":
+                content = message.get("content", "")
+                if isinstance(content, list):
+                    content = " ".join(part.get("text", "") for part in content if isinstance(part, dict))
+                title = clean(content)
+            if session_id and cwd and title:
+                break
+        add(records, "Claude", title, cwd, session_id or path.stem, path)
+    return records
+
+def gemini_sessions(home):
+    root = Path(os.environ.get("GEMINI_CLI_HOME", home / ".gemini")) / "tmp"
+    records = []
+    if not root.is_dir():
+        return records
+    for path in root.glob("*/chats/session-*.json"):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+            continue
+        session_id = data.get("sessionId") or data.get("session_id") or path.stem.removeprefix("session-")
+        cwd = data.get("projectRoot") or data.get("cwd") or ""
+        messages = data.get("messages", [])
+        title = data.get("summary") or data.get("title") or ""
+        if not title and messages:
+            first = messages[0]
+            title = first.get("content", "") if isinstance(first, dict) else ""
+        add(records, "Gemini", title, cwd, session_id, path, data.get("lastUpdated") or data.get("updatedAt"))
+    return records
+
+LOADERS = {
+    "omp": omp_sessions,
+    "pi": pi_sessions,
+    "codex": codex_sessions,
+    "claude": claude_sessions,
+    "gemini": gemini_sessions,
+    "opencode": opencode_sessions,
+    "deepseek": deepseek_sessions,
+}
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("--agent", "--client", choices=LOADERS, help="filter to one agent/client")
+    parser.add_argument("--project", metavar="PATH|NAME", help="filter by substring in the project path")
+    parser.add_argument("--list", action="store_true", help="print sessions instead of opening fzf")
+    args = parser.parse_args()
+
+    home = Path.home()
+    selected_loaders = {args.agent: LOADERS[args.agent]} if args.agent else LOADERS
+    records = []
+    for loader in selected_loaders.values():
+        records.extend(loader(home))
+    if args.project:
+        project = args.project.casefold()
+        records = [row for row in records if project in row["cwd"].casefold()]
+    records.sort(key=lambda row: row["updated"], reverse=True)
+    if not records:
+        print("pik: no saved sessions found", file=sys.stderr)
+        return 1
+
+    def display(row):
+        return "\t".join((row["agent"], row["title"], row["cwd"], row["id"], row["path"]))
+
+    def fzf_item(row):
+        context = f"{row['cwd']} · {row['id'][:8]}" if row["cwd"] else f"ID {row['id'][:8]}"
+        return "\t".join((row["agent"], row["title"], context, row["cwd"], row["id"], row["path"]))
+
+    if args.list:
+        print("\n".join(display(row) for row in records))
+        return 0
+    if not shutil.which("fzf"):
+        print("pik: fzf is required", file=sys.stderr)
+        return 2
+    while True:
+        result = subprocess.run(
+            ["fzf", "--multi", "--expect=ctrl-d", "--with-nth=1,2,3", "--nth=1,2,3", "--delimiter=\t",
+             "--wrap=word", "--prompt=AI sessions> ",
+             "--header=Tab: select  |  Ctrl-D: delete selected"],
+            input="\n".join(fzf_item(row) for row in records), text=True, capture_output=True,
+        )
+        if result.returncode:
+            return result.returncode
+        lines = result.stdout.splitlines()
+        if len(lines) < 2:
+            return 2
+        action = lines[0]
+        selected_records = []
+        for selected in lines[1:]:
+            fields = selected.split("\t", 5)
+            if len(fields) < 6:
+                print("pik: invalid selection", file=sys.stderr)
+                return 2
+            agent, title, _, cwd, session_id, session_path = fields
+            selected_records.append({
+                "agent": agent,
+                "title": title,
+                "cwd": cwd,
+                "id": session_id,
+                "path": session_path,
+            })
+
+        if action == "ctrl-d":
+            if not selected_records:
+                continue
+            titles = ", ".join(row["title"] for row in selected_records[:3])
+            if len(selected_records) > 3:
+                titles += f", and {len(selected_records) - 3} more"
+            warning = " (OpenCode child sessions included)" if any(
+                row["agent"].startswith("OpenCode") for row in selected_records
+            ) else ""
+            print(
+                f"Delete {len(selected_records)} session(s){warning}: {titles}? [y/N] ",
+                end="", file=sys.stderr, flush=True,
+            )
+            if sys.stdin.readline().strip().lower() not in {"y", "yes"}:
+                continue
+            deleted = set()
+            for row in selected_records:
+                if delete_record(row):
+                    deleted.add((row["agent"], row["id"]))
+            records = [row for row in records if (row["agent"], row["id"]) not in deleted]
+            continue
+        if not selected_records:
+            return 2
+        agent, cwd, session_id, session_path = (
+            selected_records[0][key] for key in ("agent", "cwd", "id", "path")
+        )
+        if agent == "OMP":
+            command = ["omp", "--resume", session_path or session_id]
+        elif agent == "Pi":
+            command = ["pi", "--session", session_path or session_id]
+        elif agent == "Codex":
+            command = ["codex", "resume", "--all", session_id]
+        elif agent == "Claude":
+            command = ["claude", "--resume", session_id]
+        elif agent == "Gemini":
+            command = ["gemini", "--resume", session_id]
+        else:
+            command = ["opencode", "--session", session_id, cwd] if cwd else ["opencode", "--session", session_id]
+        if not shutil.which(command[0]):
+            print(f"pik: {command[0]} is not installed or not on PATH", file=sys.stderr)
+            return 127
+        if cwd and Path(cwd).is_dir():
+            os.chdir(cwd)
+        os.execvpe(command[0], command, os.environ)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,4 +1,10 @@
 #!/opt/homebrew/bin/bash
+# Purpose: Search for files on remote hosts and copy selected files to the current directory.
+# Usage: sshget user@host:/path/to/search [user@host:/another/path ...]
+# Requirements: Apple Silicon Homebrew Bash 4+, fzf, SSH, rsync, find, and GNU sed named sed.
+# Supported systems: macOS on Apple Silicon.
+# Limits: Remote paths with spaces or shell metacharacters are unsafe. Concurrent runs can conflict.
+# State: Uses /tmp/sshget.fifo. A stale FIFO can prevent a new run.
 
 declare -r esc=$'\033'
 declare -r c_reset="${esc}[0m"

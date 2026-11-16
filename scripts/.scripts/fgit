@@ -1,4 +1,11 @@
 #!/opt/homebrew/bin/bash
+# Purpose: Browse and run common Git actions with fzf. Unknown commands go to Git.
+# Usage: Run fgit to choose an action, or run fgit COMMAND [ARGS...].
+# Actions: add, checkout, diff, log, rebase, status, and stash-ls.
+# Requirements: Apple Silicon Homebrew Bash 4+, Git, fzf, Perl, curl, and inotifywait.
+# Supported systems: macOS on Apple Silicon. diff and add need inotifywait.
+# Extra tools: curl is needed for diff. inotifywait is needed for diff and add.
+# Note: Ctrl-D in the log view calls fzgit, not fgit.
 
 declare -A aliases
 declare -A helptext

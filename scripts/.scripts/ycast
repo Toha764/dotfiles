@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+# Purpose: Download YouTube videos as MP3 audio.
+# Usage: ycast URL [URL ...], or send one URL per input line.
+# Requirements: Python 3.6+, yt-dlp, and FFmpeg on PATH.
+# Supported systems: macOS and Linux.
+# Storage: Uses iCloud Drive when its parent directory exists. Otherwise, it uses ~/Podcasts.
+# Set PODCASTS_DIR to choose another download directory.
+
+import os
+import sys
+import subprocess
+
+# <<<<<<<< change this
+DOWNLOAD_PATH=os.path.expanduser("~/Library/Mobile Documents/com~apple~CloudDocs/Podcasts")
+# <<<<<<<<<<<<<<<<<<<<,
+
+def default_podcasts_dir():
+    path = DOWNLOAD_PATH
+    if os.path.isdir(os.path.dirname(path)):
+        return path
+    return os.path.expanduser("~/Podcasts")
+
+PODCASTS = os.environ.get("PODCASTS_DIR") or default_podcasts_dir()
+ARCHIVE = os.path.join(PODCASTS, "download_log.txt")
+BITRATE = os.environ.get("YT_CAST_BITRATE", "192")
+
+def get_urls():
+    if len(sys.argv) > 1:
+        return [url.strip() for url in sys.argv[1:] if url.strip()]
+    if not sys.stdin.isatty():
+        return [url.strip() for url in sys.stdin.read().splitlines() if url.strip()]
+    return []
+
+def build_cmd(urls):
+    return [
+        "yt-dlp",
+        "--format", "bestaudio/best",
+        "--no-playlist",
+        "--output", os.path.join(PODCASTS, "%(uploader)s - %(title)s.%(ext)s"),
+        "--download-archive", ARCHIVE,
+        "--retries", "3",
+        "--fragment-retries", "3",
+        "--extract-audio",
+        "--audio-format", "mp3",
+        "--audio-quality", BITRATE,
+        "--add-metadata",
+        "--",
+        *urls
+    ]
+
+def main():
+    os.makedirs(PODCASTS, exist_ok=True)
+    urls = get_urls()
+    if not urls:
+        print("Download one or multiple YouTube links as audio.")
+        print("usage: ycast <youtube-url> [youtube-url ...]")
+        print('example: ycast "URL1" "URL2" "URL3"')
+        sys.exit(1)
+
+    print(f"yt-cast: {' '.join(urls)}")
+    try:
+        subprocess.run(build_cmd(urls), check=True)
+    except subprocess.CalledProcessError as exc:
+        print(f"yt-cast: download failed - {exc}", file=sys.stderr)
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

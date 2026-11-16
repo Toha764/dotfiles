@@ -1,480 +1,516 @@
-
+# category: action + target
 [[Snippets]]
-  Description = "docker run with port and volume"
+  Description = "docker: run container with port and volume"
   Output = ""
   Tag = ["docker"]
-  command = "docker run -d --name name -p hostport:containerport -v vol-name:app/data image:latest"
+  command = "docker run -d --name <name> -p <hostport>:<containerport> -v vol-name:app/data image:latest"
 
 [[Snippets]]
-  Description = "ssl cert expiry dates"
+  Description = "network: check ssl cert expiry dates"
   Output = ""
   Tag = ["ssl"]
   command = "echo | openssl s_client -connect <host=example.com>:<port=443> 2>/dev/null | openssl x509 -dates -noout"
 
 [[Snippets]]
-  Description = "symlink two paths"
+  Description = "files: symlink two paths"
   Output = ""
   Tag = ["fs"]
   command = "ln -s <target=/opt/myapp/config.yaml> <link=/etc/myapp/config.yaml>"
 
 [[Snippets]]
-  Description = "network interfaces and ips"
+  Description = "network: show interfaces and ips"
   Output = ""
   Tag = ["network", "ip"]
   command = "ifconfig | awk '/^[^[:space:]]/ {iface=$1} /inet / {print iface, $2} /inet6 / {print iface, $2}'"
 
 [[Snippets]]
-  Description = "public ip"
+  Description = "network: show public ip info"
   Output = ""
   Tag = ["network", "ip"]
   command = "curl -s ipinfo.io"
 
 [[Snippets]]
-  Description = "fuzzy search man pages"
+  Description = "help: fuzzy search man pages"
   Output = ""
   Tag = ["fzf"]
   command = "man $(man -k . | fzf | awk \"{print \\$1}\" | sed \"s/(.*//\")"
 
 [[Snippets]]
-  Description = "find process by name"
+  Description = "system: find process by name"
   Output = ""
   Tag = ["process"]
   command = "pgrep -fl '<name>'"
 
 [[Snippets]]
-  Description = "listening tcp ports"
+  Description = "network: list listening tcp ports"
   Output = ""
   Tag = ["network", "mac"]
   command = "sudo lsof -nP -iTCP -sTCP:LISTEN"
 
 [[Snippets]]
-  Description = "journal warnings"
+  Description = "logs: show last 50 linux journal warnings"
   Output = ""
   Tag = ["linux", "logs"]
   command = "sudo journalctl -p warning -n 50 --no-pager"
 
 [[Snippets]]
-  Description = "journal errors"
+  Description = "logs: show last 50 linux journal errors"
   Output = ""
   Tag = ["linux", "logs"]
   command = "sudo journalctl -p err -n 50 --no-pager"
 
 [[Snippets]]
-  Description = "macos error logs last hour"
+  Description = "logs: show macos errors from last hour"
   Output = ""
   Tag = ["macos", "logs"]
   command = "log show --last 1h --predicate 'messageType == error' --style compact"
 
 [[Snippets]]
-  Description = "running systemd services"
+  Description = "system: list running systemd services"
   Output = ""
   Tag = ["linux", "systemd"]
   command = "systemctl --type=service --state=running"
 
 [[Snippets]]
-  Description = "highlight log colors"
+  Description = "logs: highlight errors, warnings, info and debug"
   Output = ""
   Tag = []
   command = "grep -E --color 'error|warn|info|debug|$'"
 
 [[Snippets]]
-  Description = "format json output"
+  Description = "text: format json output"
   Output = ""
   Tag = ["fmt"]
   command = "jq ."
 
 [[Snippets]]
-  Description = "align columns"
+  Description = "text: align columns"
   Output = ""
   Tag = ["fmt"]
   command = "column -t"
 
 [[Snippets]]
-  Description = "highlight log levels"
+  Description = "logs: highlight errors, warnings and info"
   Output = ""
   Tag = ["fmt", "logs"]
   command = "grep -E --color 'error|warn|info|$'"
 
 [[Snippets]]
-  Description = "syntax highlight output"
+  Description = "text: syntax highlight output"
   Output = ""
   Tag = ["fmt"]
   command = "bat -l <lang=log>"
 
 [[Snippets]]
-  Description = "pretty log graph"
+  Description = "git: show pretty commit graph"
   Output = ""
   Tag = ["git"]
   command = "git log --oneline --graph --decorate --all"
 
 [[Snippets]]
-  Description = "log with stats"
+  Description = "git: show recent commits with stats"
   Output = ""
   Tag = ["git"]
   command = "git log --stat --oneline -n <n=10>"
 
 [[Snippets]]
-  Description = "search commits by code change"
+  Description = "git: search commits by code change"
   Output = ""
   Tag = ["git"]
   command = "git log -S '<string>' --oneline"
 
 [[Snippets]]
-  Description = "diff staged changes"
+  Description = "git: diff staged changes"
   Output = ""
   Tag = ["git"]
   command = "git diff --cached"
 
 [[Snippets]]
-  Description = "show files changed in commit"
+  Description = "git: show files changed in commit"
   Output = ""
   Tag = ["git"]
   command = "git show --stat <hash=HEAD>"
 
 [[Snippets]]
-  Description = "show who changed a line"
+  Description = "git: show who changed a line"
   Output = ""
   Tag = ["git"]
   command = "git blame -L <start=1>,<end=20> <file>"
 
 [[Snippets]]
-  Description = "undo last commit keep changes"
+  Description = "git: undo last commit and keep changes"
   Output = ""
   Tag = ["git"]
   command = "git reset --soft HEAD~1"
 
 [[Snippets]]
-  Description = "undo last commit discard changes"
+  Description = "git: undo last commit and discard changes"
   Output = ""
   Tag = ["git"]
   command = "git reset --hard HEAD~1"
 
 [[Snippets]]
-  Description = "stash with untracked changes"
+  Description = "git: stash tracked and untracked changes"
   Output = ""
   Tag = ["git"]
   command = "git stash -u"
 
 [[Snippets]]
-  Description = "find commit that introduced bug"
+  Description = "git: start bisect to find buggy commit"
   Output = ""
   Tag = ["git"]
   command = "git bisect start && git bisect bad && git bisect good <hash>"
 
 [[Snippets]]
-  Description = "edit last commit message"
+  Description = "git: amend last commit and keep message"
   Output = ""
   Tag = ["git"]
   command = "git commit --amend --no-edit"
 
 [[Snippets]]
-  Description = "interactive rebase last n commits"
+  Description = "git: interactive rebase last n commits"
   Output = ""
   Tag = ["git"]
   command = "git rebase -i HEAD~<n=3>"
 
 [[Snippets]]
-  Description = "clone single branch shallow"
+  Description = "git: shallow clone single branch"
   Output = ""
   Tag = ["git"]
   command = "git clone --depth=1 --branch <branch=main> <url>"
 
 [[Snippets]]
-  Description = "copy password to clipboard"
+  Description = "pass: copy password to clipboard"
   Output = ""
   Tag = ["pass"]
   command = "pass show -c <name>"
 
 [[Snippets]]
-  Description = "show password"
+  Description = "pass: show password"
   Output = ""
   Tag = ["pass"]
   command = "pass show <name>"
 
 [[Snippets]]
-  Description = "insert new password"
+  Description = "pass: insert new password"
   Output = ""
   Tag = ["pass"]
   command = "pass insert <name>"
 
 [[Snippets]]
-  Description = "insert multiline entry"
+  Description = "pass: insert multiline entry"
   Output = ""
   Tag = ["pass"]
   command = "pass insert -m <name>"
 
 [[Snippets]]
-  Description = "generate password"
+  Description = "pass: generate password"
   Output = ""
   Tag = ["pass"]
   command = "pass generate <name> <length=32>"
 
 [[Snippets]]
-  Description = "edit entry"
+  Description = "pass: edit entry"
   Output = ""
   Tag = ["pass"]
   command = "pass edit <name>"
 
 [[Snippets]]
-  Description = "find entries by name"
+  Description = "pass: find entries by name"
   Output = ""
   Tag = ["pass"]
   command = "pass find <query>"
 
 [[Snippets]]
-  Description = "grep across all entries"
+  Description = "pass: grep across all entries"
   Output = ""
   Tag = ["pass"]
   command = "pass grep <pattern>"
 
 [[Snippets]]
-  Description = "move rename entry"
+  Description = "pass: move or rename entry"
   Output = ""
   Tag = ["pass"]
   command = "pass mv <old> <new>"
 
 [[Snippets]]
-  Description = "delete entry"
+  Description = "pass: delete entry"
   Output = ""
   Tag = ["pass"]
   command = "pass rm <name>"
 
 [[Snippets]]
-  Description = "list store"
+  Description = "pass: list password store"
   Output = ""
   Tag = ["pass"]
   command = "pass ls"
 
 [[Snippets]]
-  Description = "connect with identity file"
+  Description = "ssh: connect with identity file"
   Output = ""
   Tag = ["ssh"]
   command = "ssh -i <key=~/.ssh/id_rsa> <user=root>@<host>"
 
 [[Snippets]]
-  Description = "copy public key to host"
+  Description = "ssh: copy public key to host"
   Output = ""
   Tag = ["ssh"]
   command = "ssh-copy-id -i <key=~/.ssh/id_rsa.pub> <user=root>@<host>"
 
 [[Snippets]]
-  Description = "generate ed25519 key"
+  Description = "ssh: generate ed25519 key"
   Output = ""
   Tag = ["ssh"]
   command = "ssh-keygen -t ed25519 -C '<comment>'"
 
 [[Snippets]]
-  Description = "copy file from remote"
+  Description = "ssh: copy file from remote"
   Output = ""
   Tag = ["ssh", "scp"]
   command = "scp <user>@<host>:<path> <dest=.>"
 
 [[Snippets]]
-  Description = "run command on remote"
+  Description = "ssh: run command on remote"
   Output = ""
   Tag = ["ssh"]
   command = "ssh <user>@<host> '<cmd>'"
 
 [[Snippets]]
-  Description = "add key to agent"
+  Description = "ssh: add key to agent"
   Output = ""
   Tag = ["ssh"]
   command = "ssh-add <key=~/.ssh/id_ed25519>"
 
 [[Snippets]]
-  Description = "local port forward (access exposed)"
+  Description = "ssh: forward local port to remote service"
   Output = ""
   Tag = ["ssh", "tunnel"]
   command = "ssh -L <local=8080>:<remote-host=localhost>:<remote-port=80> <user>@<host>"
 
 [[Snippets]]
-  Description = "remote port forward (expose myself)"
+  Description = "ssh: forward remote port to local service"
   Output = ""
   Tag = ["ssh", "tunnel"]
   command = "ssh -R <remote=8080>:<local-host=localhost>:<local-port=80> <user>@<host>"
 
 [[Snippets]]
-  Description = "list loaded keys"
+  Description = "ssh: list loaded keys"
   Output = ""
   Tag = ["ssh"]
   command = "ssh-add -l"
 
 [[Snippets]]
-  Description = "SSH SOCK Proxy"
+  Description = "ssh: start socks proxy"
   Output = ""
   Tag = ["ssh", "proxy"]
   command = "ssh -D <port=1080> user@host"
 
 [[Snippets]]
-  Description = "stow apply mac package"
+  Description = "stow: apply mac package"
   Output = ""
   Tag = ["stow", "dots"]
   command = "stow -d <dotfiles=~/dotfiles>/os-specific/mac -t ~ <package>"
 
 [[Snippets]]
-  Description = "stow apply linux package"
+  Description = "stow: apply linux package"
   Output = ""
   Tag = ["stow", "dots"]
   command = "stow -d <dotfiles=~/dotfiles>/os-specific/linux -t ~ <package>"
 
 [[Snippets]]
-  Description = "stow apply agnostic package"
+  Description = "stow: apply os-agnostic package"
   Output = ""
   Tag = ["stow", "dots"]
   command = "stow -d <dotfiles=~/dotfiles>/os-agnostic -t ~ <package>"
 
 [[Snippets]]
-  Description = "stow apply all mac"
+  Description = "stow: apply all mac packages"
   Output = ""
   Tag = ["stow", "dots"]
   command = "cd <dotfiles=~/dotfiles>/os-specific/mac && stow -t ~ */"
 
 [[Snippets]]
-  Description = "stow reapply package"
+  Description = "stow: reapply package"
   Output = ""
   Tag = ["stow", "dots"]
   command = "stow -R -d <dotfiles=~/dotfiles/os-agnostic> -t ~ <package>"
 
 [[Snippets]]
-  Description = "stow remove package"
+  Description = "stow: remove package symlinks"
   Output = ""
   Tag = ["stow", "dots"]
   command = "stow -D -d <dotfiles=~/dotfiles>/os-agnostic> -t ~ <package>"
 
 [[Snippets]]
-  Description = "stow dry run"
+  Description = "stow: preview package symlinks"
   Output = ""
   Tag = ["stow", "dots"]
   command = "stow -nv -d <dotfiles=~/dotfiles/os-agnostic> -t ~ <package>"
 
 [[Snippets]]
-  Description = "extract value after pattern"
+  Description = "text: extract value after pattern"
   Output = ""
   Tag = ["grep"]
   command = "grep -oP '<KEY>=\\K[^ ]+'"
 
 [[Snippets]]
-  Description = "or filter"
+  Description = "text: filter lines matching any pattern"
   Output = ""
   Tag = ["grep"]
   command = "grep -E '<foo>|<bar>|<baz>' <file>"
 
 [[Snippets]]
-  Description = "frequency count"
+  Description = "text: count matches by frequency"
   Output = ""
   Tag = ["grep"]
   command = "grep -oP '<pattern>' <file> | sort | uniq -c | sort -nr"
 
 [[Snippets]]
-  Description = "context around match"
+  Description = "text: show context around match"
   Output = ""
   Tag = ["grep"]
   command = "grep -C <n=3> '<pattern>' <file>"
 
 [[Snippets]]
-  Description = "Grep IP Address"
+  Description = "text: find ip-like patterns with context"
   Output = ""
   Tag = ["grep", "ip"]
   command = "grep -E -C 2 \"[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}\" <file_name>"
 
 [[Snippets]]
-  Description = "start omni monoc server"
+  Description = "docker: start omni monoc server"
   Output = ""
   Tag = ["monoc"]
   command = "docker run -d --name monoc-models -p 20128:20128 -v monoc-cpu-emulator_monoc_db:/app/data diegosouzapw/omniroute:latest"
 
 [[Snippets]]
-  Description = "Past 6 month contribution"
+  Description = "git: count author commits from past 6 months"
   Output = ""
   Tag = ["git"]
   command = "git shortlog -sn --since=\"6 months ago\""
 
 [[Snippets]]
-  Description = "Realtime Log w/ Patterns"
+  Description = "logs: follow log and filter errors"
   Output = ""
   Tag = ["grep", "log"]
   command = "tail -f file.log | grep --line-buffered \"ERROR\""
 
 [[Snippets]]
-  Description = "Grab Login Details HTTP"
+  Description = "network: filter captured traffic for login fields"
   Output = ""
   Tag = ["security", "dump"]
   command = "sudo tcpdump -i <interface=en0> port <port=22> -l -A | egrep -i \\\n\t'pass=|pwd=|log=|login=|user=|username=|pw=|passw=|passwd=|password=|pass:|user:|username:|password:|login:|pass |user ' \\\n\t--color=auto --line-buffered -B20"
 
 [[Snippets]]
-  Description = "Check Realtime Network Traffic"
+  Description = "network: inspect live traffic for host and port"
   Output = ""
   Tag = ["dump", "network"]
   command = "sudo tcpdump -i en0 -nn -s0 -X 'host <host> and port <port=443>'"
 
 [[Snippets]]
-  Description = "Read Headers"
+  Description = "network: read http response headers"
   Output = ""
   Tag = ["#curl"]
   command = "curl -I http://"
 
 [[Snippets]]
-  Description = "Weather Info"
+  Description = "weather: show forecast for location"
   Output = ""
   Tag = ["weather"]
   command = "curl wttr.in/<location=dhaka>"
 
 [[Snippets]]
-  Description = "Find files w/ size range"
+  Description = "files: find files between 1000 and 1200 bytes"
   Output = ""
   Tag = ["find", "size"]
   command = "find ./ -size +1000c -size -1200c"
 
 [[Snippets]]
-  Description = "Find Unique Lines"
+  Description = "text: find lines occurring only once"
   Output = ""
   Tag = ["sort", "unique"]
   command = "sort <file> | uniq --unique"
 
 [[Snippets]]
-  Description = "Scan Open Ports"
+  Description = "network: scan host port range"
   Output = ""
   Tag = ["port", "nmap"]
   command = "nmap <host=localhost> -p <range=31000-32000>"
 
 [[Snippets]]
-  Description = "Find ports running SSL/TLS and Inspect Certificates"
+  Description = "network: inspect ssl certs on host ports"
   Output = ""
   Tag = []
   command = "nmap -p <PORT_RANGE> --script ssl-cert <HOST>"
 
 [[Snippets]]
-  Description = "Scan a Host for Vulnerablities"
+  Description = "network: scan host for vulnerabilities"
   Output = ""
   Tag = ["nmap", "vuln"]
   command = "nmap --script vuln -p 22,80,443 <host-ip=localhost>"
 
 [[Snippets]]
-  Description = "Swap Capital <-> Small Letters"
+  Description = "text: swap uppercase and lowercase"
   Output = ""
   Tag = ["fmt", "translate"]
   command = "tr 'A-Za-z' 'a-zA-Z'"
 
 [[Snippets]]
-  Description = "Find Hidden Pages & Folders"
+  Description = "network: find hidden web pages and folders"
   Output = ""
   Tag = ["gobuster", "recon", "pentest"]
   command = "gobuster dir -u http://testphp.vulnweb.com -w ~/SecLists/Discovery/Web-Content/common.txt"
 
 [[Snippets]]
-  Description = "listening tcp ports on linux"
+  Description = "network: filter listening tcp ports on linux"
   Output = ""
   Tag = ["linux", "network"]
   command = "ss -tlpn | grep <port>"
 
 [[Snippets]]
-  Description = "port usage by process"
+  Description = "network: show process using port"
   Output = ""
   Tag = ["network"]
   command = "lsof -i :<port>"
 
 [[Snippets]]
-  Description = "C to Assembly"
+  Description = "code: compile c to assembly"
   Output = ""
   Tag = ["C", "Assembly"]
   command = "gcc -S main.c"
+
+[[Snippets]]
+  Description = "audio: download youtube podcast"
+  Output = ""
+  Tag = ["audio", "youtube", "download", "scripts"]
+  command = "ycast \"<url>\""
+
+[[Snippets]]
+  Description = "code: search text in current project"
+  Output = ""
+  Tag = ["code", "search", "scripts"]
+  command = "fgr \"<search>\""
+
+[[Snippets]]
+  Description = "system: find and stop a process"
+  Output = ""
+  Tag = ["system", "process", "scripts"]
+  command = "fkill \"<process>\""
+
+[[Snippets]]
+  Description = "docker: inspect cache usage"
+  Output = ""
+  Tag = ["docker", "containers"]
+  command = "docker system df"
+
+[[Snippets]]
+  Description = "docker: remove all unused cache"
+  Output = ""
+  Tag = ["docker", "containers"]
+  command = "docker builder prune -a -f"
+
+[[Snippets]]
+  Description = "ssh: select and download remote files"
+  Output = ""
+  Tag = ["ssh", "files", "download", "scripts"]
+  command = "sshget \"<user@host>:<path>\""

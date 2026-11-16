@@ -1,7 +1,11 @@
 #!/bin/bash
-# this is a docker image security checker
-# uses docker scout to summarize vulnerabilities
-# usage: make sure youre signed in docker desktop &
+# Purpose: Build the Compose omni profile and write Docker Scout vulnerability reports.
+# Usage: Run beside the project Compose file.
+# Requirements: Bash, Docker with Compose and Scout, and a running Docker daemon.
+# Supported systems: macOS and Linux.
+# Output: Replaces files in security-reports and writes a summary.txt file.
+# Scope: Scans all local images. ONLY_CRITICAL=true limits reports to critical findings.
+# Counts: The summary sets high, medium, and low counts to zero.
 
 set -e
 

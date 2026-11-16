@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
-# fuzzy interactive grepping tool
-# dependency: fzf, bat or cat, rg or grep, awk
+# Purpose: Search file contents and open a selected match in your editor.
+# Usage: Run fgr [SEARCH_TEXT], then select a match in fzf.
+# Requirements: Bash, fzf, EDITOR, and either ripgrep or grep.
+# Supported systems: macOS and Linux.
+# Preview: Uses bat when available. Otherwise, it uses awk or cat.
+# Limit: Results split on colons, so paths with colons can be incorrect.
 
 select_from() {
   local c

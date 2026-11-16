@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# fuzzy search to kill processes
+# Purpose: Find a process by text and send it a signal.
+# Usage: Run fkill [SEARCH_TEXT], then select a process in fzf.
+# Requirements: Bash, fzf, ps, and kill.
+# Supported systems: macOS and Linux with ps aux output that puts the PID in column 2.
+# Controls: Ctrl-X sends SIGTERM. F9 sends SIGKILL without confirmation.
 
 while :; do
   case "$1" in

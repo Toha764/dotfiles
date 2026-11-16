@@ -8,7 +8,7 @@ plugins=(
     zsh-syntax-highlighting
 )
 
-source $HOME/.oh-my-zsh/oh-my-zsh.sh
+[[ -r "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]] && source "$HOME/.oh-my-zsh/oh-my-zsh.sh"
 
 # ~Nyaan (IMPORTANT! shell session won't open without it!, obviously :3 )
 printf '\e[35m
@@ -58,8 +58,8 @@ export EDITOR="nvim"
 export VISUAL="nvim"
 
 ### FZF & navigation tools ###
-source <(fzf --zsh)
-eval "$(zoxide init zsh)"
+(( $+commands[fzf] )) && source <(fzf --zsh)
+(( $+commands[zoxide] )) && eval "$(zoxide init zsh)"
 export FZF_DEFAULT_OPTS='--height 50% --tmux bottom,50% --layout reverse --border top'
 
 # --- SUPER CUSTOM COMMANDS ---
@@ -68,8 +68,8 @@ alias rc='nvim $HOME/.zshrc'    # edit config
 alias c="clear"
 alias nv="nvim"
 alias yz="yazi"
-alias cat="bat"
-alias ls="eza --no-filesize --long --color=always --icons=always --no-user"
+(( $+commands[bat] )) && alias cat="bat"
+(( $+commands[eza] )) && alias ls="eza --no-filesize --long --color=always --icons=always --no-user"
 alias tx="tmux attach 2>/dev/null || tmux new-session -s main"
 
 ### git shortcuts ###
@@ -90,4 +90,4 @@ alias fnv="nvim \$(fzf --preview 'bat --color=always {}')"
 for f in ~/.config/zsh/conf.d/*.zsh(N); do source "$f"; done
 
 # Added by Antigravity CLI installer
-export PATH="/Users/toha/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"

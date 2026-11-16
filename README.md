@@ -110,6 +110,30 @@ chmod +x ~/dotfiles/scripts/.scripts/*
 stow --dir=scripts --target=~ .scripts
 ```
 
+## AI session picker
+
+`pik` uses `fzf` to find and resume OMP, Pi, Codex, Claude Code, Gemini CLI, and OpenCode
+sessions. DeepSeek sessions appear when DeepSeek is the model used by OpenCode.
+
+Sessions are sorted newest first using each agent's update time. Type in fzf to filter by client,
+title, or project path. Use `--client`/`--agent` or `--project` for an initial filter.
+
+The picker shows the project directory and a short session ID together; it hides the full ID.
+Long entries wrap in the list.
+
+Prerequisites: Python 3.9+ and `fzf`; install each agent CLI to resume its sessions.
+
+```bash
+pik
+pik --client opencode
+pik --agent deepseek
+pik --project dotfiles
+pik --list
+```
+
+Preview pane is a TODO; `pik` currently shows the session list only.
+Press `Tab` to select multiple sessions, then `Ctrl-D` to delete them after one confirmation.
+
 ---
 
 ## Useful commands
